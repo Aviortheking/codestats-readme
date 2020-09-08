@@ -80,8 +80,8 @@ function fallbackColor(color, fallbackColor) {
 
 function request(data, headers) {
   return axios({
-    url: "https://api.github.com/graphql",
-    method: "post",
+    url: "https://codestats.net/api/users/" + data.username,
+    method: "get",
     headers,
     data,
   });
