@@ -26,8 +26,10 @@ async function fetchTopLanguages(username) {
   for (const key in repoNodes) {
     const item = repoNodes[key]
     list.push({
-      name: key,
-      xp: item.xps
+	  name: key,
+	  color: languageColor[key] ? languageColor[key].color  : '#000000',
+	  xp: item.xps,
+	  recentXp: item.new_xps + item.xps
     })
   }
 
@@ -37,27 +39,19 @@ async function fetchTopLanguages(username) {
     })
     .sort((a, b) => b.xp - a.xp)
     .reduce((acc, prev) => {
-      // get the size of the language (bytes)
-      let langSize = prev.xp;
-
-      // if we already have the language in the accumulator
-      // & the current language name is same as previous name
-      // add the size to the language size.
-      if (acc[prev.name] && prev.name === acc[prev.name].name) {
-        langSize = prev.size + acc[prev.name].size;
-      }
       return {
         ...acc,
         [prev.name]: {
           name: prev.name,
-          color: languageColor[prev.name] ? languageColor[prev.name].color  : '#000000',
-          size: langSize,
+          color: prev.color,
+		  size: prev.xp,
+		  recentSize: prev.recentXp
         },
       };
     }, {});
 
   const topLangs = Object.keys(repoNodes)
-    .slice(0, 5)
+    // .slice(0, 5)
     .reduce((result, key) => {
       result[key] = repoNodes[key];
       return result;

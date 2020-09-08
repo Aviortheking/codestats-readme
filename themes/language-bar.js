@@ -1538,6 +1538,10 @@ module.exports = { // https://github.com/ozh/github-colors
     "TypeScript": {
         "color": "#2b7489",
         "url": "https://github.com/trending?l=TypeScript"
+	},
+	"TypeScript (JSX)": {
+        "color": "#2b7489",
+        "url": "https://github.com/trending?l=TypeScript"
     },
     "Unified Parallel C": {
         "color": null,

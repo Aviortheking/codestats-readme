@@ -29,10 +29,5 @@
     "emoji-name-map": "^1.2.8",
     "github-username-regex": "^1.0.0",
     "word-wrap": "^1.2.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm test"
-    }
   }
 }
