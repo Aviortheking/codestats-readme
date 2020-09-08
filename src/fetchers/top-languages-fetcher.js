@@ -1,35 +1,11 @@
-const { request, logger } = require("../common/utils");
+const { codeStatsRequest, logger } = require("../common/utils");
 const retryer = require("../common/retryer");
+const languageColor = require('../../themes/language-bar')
 require("dotenv").config();
 
-const fetcher = (variables, token) => {
-  return request(
-    {
-      query: `
-      query userInfo($login: String!) {
-        user(login: $login) {
-          # fetch only owner repos & not forks
-          repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
-            nodes {
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    color
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      `,
-      variables,
-    },
-    {
-      Authorization: `bearer ${token}`,
-    }
+const fetcher = (variables) => {
+  return codeStatsRequest(
+    variables
   );
 };
 
@@ -43,30 +19,38 @@ async function fetchTopLanguages(username) {
     throw Error(res.data.errors[0].message || "Could not fetch user");
   }
 
-  let repoNodes = res.data.data.user.repositories.nodes;
+  let repoNodes = res.data.languages;
 
-  repoNodes = repoNodes
-    .filter((node) => {
-      return node.languages.edges.length > 0;
+  // Remap nodes
+  const list = []
+  for (const key in repoNodes) {
+    const item = repoNodes[key]
+    list.push({
+      name: key,
+      xp: item.xps
     })
-    // flatten the list of language nodes
-    .reduce((acc, curr) => curr.languages.edges.concat(acc), [])
-    .sort((a, b) => b.size - a.size)
+  }
+
+  repoNodes = list
+    .filter((node) => {
+      return node.xp > 0;
+    })
+    .sort((a, b) => b.xp - a.xp)
     .reduce((acc, prev) => {
       // get the size of the language (bytes)
-      let langSize = prev.size;
+      let langSize = prev.xp;
 
       // if we already have the language in the accumulator
       // & the current language name is same as previous name
       // add the size to the language size.
-      if (acc[prev.node.name] && prev.node.name === acc[prev.node.name].name) {
-        langSize = prev.size + acc[prev.node.name].size;
+      if (acc[prev.name] && prev.name === acc[prev.name].name) {
+        langSize = prev.size + acc[prev.name].size;
       }
       return {
         ...acc,
-        [prev.node.name]: {
-          name: prev.node.name,
-          color: prev.node.color,
+        [prev.name]: {
+          name: prev.name,
+          color: languageColor[prev.name] ? languageColor[prev.name].color  : '#000000',
           size: langSize,
         },
       };

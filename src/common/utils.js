@@ -80,10 +80,17 @@ function fallbackColor(color, fallbackColor) {
 
 function request(data, headers) {
   return axios({
-    url: "https://codestats.net/api/users/" + data.username,
-    method: "get",
+    url: "https://api.github.com/graphql",
+    method: "post",
     headers,
     data,
+  });
+}
+
+function codeStatsRequest(data) {
+  return axios({
+    url: "https://codestats.net/api/users/" + data.login,
+    method: "get",
   });
 }
 
@@ -194,6 +201,7 @@ module.exports = {
   encodeHTML,
   isValidHexColor,
   request,
+  codeStatsRequest,
   parseArray,
   parseBoolean,
   fallbackColor,
