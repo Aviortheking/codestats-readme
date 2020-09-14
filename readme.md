@@ -1,5 +1,5 @@
 <p align="center">
- <img width="100px" src="https://res.cloudinary.com/anuraghazra/image/upload/v1594908242/logo_ccswme.svg" align="center" alt="GitHub Readme Stats" />
+ <img width="100px" src="https://raw.githubusercontent.com/Aviortheking/codestats-readme/master/.github/logo.svg" align="center" alt="GitHub Readme Stats" />
  <h2 align="center">Code::Stats Readme</h2>
  <p align="center">Get dynamically generated Code::Stats stats on your readmes!</p>
 </p>
