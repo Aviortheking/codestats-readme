@@ -1,7 +1,6 @@
 import { getCardColors, FlexLayout, clampValue } from "../common/utils"
 import Card from '../common/Card'
-import { query } from "../../api/top-langs";
-import { data } from "../fetchers/top-languages-fetcher";
+import { data } from "../fetcher";
 import React from 'react'
 import themes from "../../themes";
 

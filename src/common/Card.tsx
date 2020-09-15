@@ -14,7 +14,7 @@ export default class Card {
 	constructor(
 		public width = 100,
 		public height = 100,
-		public colors: {titleColor?: string | Array<string>, textColor?: string | Array<string>, bgColor?: string | Array<string>} = {},
+		public colors: {titleColor?: string | Array<string>, textColor?: string | Array<string>, bgColor?: string | Array<string>, iconColor?: string | Array<string>} = {},
 		public title = "",
 		public titlePrefixIcon?: string
 	) {}

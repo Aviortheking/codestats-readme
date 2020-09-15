@@ -1,8 +1,9 @@
 import React from 'react'
 
-import axios from 'axios'
+import axios, { AxiosPromise } from 'axios'
 import wrap from 'word-wrap'
 import themes from '../../themes'
+import { CodeStatsResponse } from '../fetcher/interface';
 
 export const renderError = (message: string, secondaryMessage = "") => {
 	return (
@@ -13,7 +14,7 @@ export const renderError = (message: string, secondaryMessage = "") => {
 				.gray { fill: #858585 }
 			`}</style>
 			<rect x="0.5" y="0.5" width="494" height="99%" rx="4.5" fill="#FFFEFE" stroke="#E4E2E2"/>
-			<text x="25" y="45" className="text">Something went wrong! file an issue at https://git.io/JJmN9</text>
+			<text x="25" y="45" className="text">Something went wrong! file an issue at https://dze.io/3nL29</text>
 			<text data-testid="message" x="25" y="55" className="text small">
 			<tspan x="25" dy="18">{encodeHTML(message)}</tspan>
 			<tspan x="25" dy="18" className="gray">{secondaryMessage}</tspan>
@@ -33,7 +34,7 @@ export function encodeHTML(str: string) {
 
 export function kFormatter(num: number) {
 	return Math.abs(num) > 999
-		? Math.sign(num) * (Math.abs(num) / 1000).toFixed(1) + "k"
+		? Math.sign(num) * parseInt((Math.abs(num) / 1000).toFixed(1)) + "k"
 		: Math.sign(num) * Math.abs(num);
 }
 
@@ -78,16 +79,7 @@ export function fallbackColor(color: string, fallbackColor: Array<string>| strin
 	);
 }
 
-export function request(data?: any, headers?: any) {
-	return axios({
-		url: "https://api.github.com/graphql",
-		method: "post",
-		headers,
-		data,
-	});
-}
-
-export function codeStatsRequest(data?: any) {
+export function request(data: {login: string}): AxiosPromise<CodeStatsResponse> {
 	return axios({
 		url: "https://codestats.net/api/users/" + data.login,
 		method: "get",
@@ -182,9 +174,7 @@ export const CONSTANTS = {
 };
 
 export const SECONDARY_ERROR_MESSAGES = {
-	MAX_RETRY:
-		"Please add an env variable called PAT_1 with your github token in vercel",
-	USER_NOT_FOUND: "Make sure the provided username is not an organization",
+	MAX_RETRY: "Make sur your profile is not private"
 };
 
 export class CustomError extends Error {
@@ -197,4 +187,17 @@ export class CustomError extends Error {
 
 	static MAX_RETRY = "MAX_RETRY";
 	static USER_NOT_FOUND = "USER_NOT_FOUND";
+}
+
+export function getLevel(xp: number): number {
+	return Math.trunc(Math.floor(CONSTANTS.LEVEL_FACTOR * Math.sqrt(xp)))
+}
+
+/**
+ * Return the progress (0-99)% til next level
+ * @param xp Xp number
+ */
+export function getProgress(xp: number): number {
+	const currentLvl = getLevel(xp)
+	return Math.trunc((CONSTANTS.LEVEL_FACTOR * Math.sqrt(xp) - currentLvl) * 100)
 }

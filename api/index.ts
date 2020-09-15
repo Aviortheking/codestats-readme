@@ -1,6 +1,6 @@
-import { renderError, clampValue, parseBoolean, parseArray, CONSTANTS} from '../src/common/utils'
-import { fetchTopLanguages } from '../src/fetcher'
-import renderTopLanguages from '../src/cards/top-languages-card'
+import { renderError, parseBoolean, parseArray, CONSTANTS} from '../src/common/utils'
+import { fetchProfile } from '../src/fetcher'
+import renderStatsCard from '../src/cards/profileCard'
 import blacklist from '../src/common/blacklist'
 import { Request, Response } from 'express';
 import ReactDOMServer from 'react-dom/server'
@@ -11,15 +11,15 @@ export interface query {
 	hide?: string
 	hide_title?: string
 	hide_border?: string
-	card_width?: string
+	hide_rank?: string
+	show_icons?: string
+	line_height?: string
 	title_color?: string
+	icon_color?: string
 	text_color?: string
 	bg_color?: string
-	language_count?: string
-	show_level?: string
 	theme?: keyof typeof themes
 	cache_seconds?: string
-	layout?: string
 }
 
 export default async (req: Request<unknown, unknown, unknown, query>, res: Response) => {
@@ -28,47 +28,42 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		hide,
 		hide_title,
 		hide_border,
-		card_width,
+		hide_rank,
+		show_icons,
+		line_height,
 		title_color,
+		icon_color,
 		text_color,
 		bg_color,
-		language_count,
-		show_level,
 		theme,
-		cache_seconds,
-		layout,
 	} = req.query;
 
 	res.setHeader("Content-Type", "image/svg+xml");
 
 	if (blacklist.includes(username)) {
-		return res.send(renderError("Something went wrong"));
+		return res.send(renderError("Username is in blacklist"));
 	}
 
 	try {
-		const topLangs = await fetchTopLanguages(username);
+		const data = await fetchProfile(username);
 
-		const cacheSeconds = clampValue(
-		parseInt(cache_seconds || CONSTANTS.TWO_HOURS + '', 10),
-		CONSTANTS.TWO_HOURS,
-		CONSTANTS.ONE_DAY
-		);
+		const cacheSeconds = CONSTANTS.TWO_HOURS
 
 		res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
-		renderTopLanguages(topLangs, {
+		renderStatsCard(data, {
+			hide: parseArray(hide),
+			show_icons: parseBoolean(show_icons),
 			hide_title: parseBoolean(hide_title),
 			hide_border: parseBoolean(hide_border),
-			card_width: parseInt(card_width || '', 10),
-			hide: parseArray(hide),
-			language_count: parseInt(language_count || '6'),
+			hide_rank: parseBoolean(hide_rank),
+			line_height: line_height ? parseInt(line_height , 10) : undefined,
 			title_color,
+			icon_color,
 			text_color,
 			bg_color,
-			show_level,
 			theme,
-			layout,
 		}))
 		);
 	} catch (err) {

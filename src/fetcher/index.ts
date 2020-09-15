@@ -1,27 +1,6 @@
-import { codeStatsRequest, logger, CONSTANTS } from '../common/utils'
+import { request, logger, CONSTANTS, getLevel, CustomError } from '../common/utils'
 import retryer from '../common/retryer'
 import languageColor from '../../themes/language-bar.json'
-
-const fetcher = (variables: any) => {
-	return codeStatsRequest(
-		variables
-	);
-};
-
-interface response {
-	user: string
-	total_xp: number
-	new_xp: number
-	machines: Record<string, {
-		xps: number
-		new_xps: number
-	}>
-	languages: Record<string, {
-		xps: number
-		new_xps: number
-	}>
-	dates: Record<string, number>
-}
 
 export interface data {
 	name: string
@@ -30,10 +9,23 @@ export interface data {
 	recentSize: number
 }
 
-async function fetchTopLanguages(username: string) {
+export async function fetchProfile(username: string) {
+	if (!username) throw Error('Invalid Username')
+
+	const response = await retryer(request, {login: username})
+
+	return {
+		username,
+		xp: response.data.total_xp,
+		recentXp: response.data.new_xp,
+		level: getLevel(response.data.total_xp + response.data.new_xp)
+	}
+}
+
+export async function fetchTopLanguages(username: string) {
 	if (!username) throw Error("Invalid username");
 
-	let res: {data: response} = await retryer(fetcher, { login: username });
+	let res = await retryer(request, { login: username });
 
 	let repoNodes = res.data.languages;
 
@@ -76,5 +68,3 @@ async function fetchTopLanguages(username: string) {
 
 	return topLangs as Record<string, data>
 }
-
-export default fetchTopLanguages
