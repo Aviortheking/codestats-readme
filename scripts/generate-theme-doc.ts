@@ -1,5 +1,5 @@
-const theme = require("../themes/index");
-const fs = require("fs");
+import fs from 'fs'
+import theme from '../themes'
 
 const TARGET_FILE = "./themes/README.md";
 const REPO_CARD_LINKS_FLAG = "<!-- REPO_CARD_LINKS -->";
@@ -17,7 +17,7 @@ With inbuilt themes you can customize the look of the card without doing any man
 Use \`?theme=THEME_NAME\` parameter like so :-
 
 \`\`\`md
-![Anurag's github stats](https://github-readme-stats.vercel.app/api?username=anuraghazra&theme=dark&show_icons=true)
+![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=dark&show_icons=true)
 \`\`\`
 
 ## Stats
@@ -41,29 +41,29 @@ ${STAT_CARD_LINKS_FLAG}
 ${REPO_CARD_LINKS_FLAG}
 
 
-[add-theme]: https://github.com/anuraghazra/github-readme-stats/edit/master/themes/index.js
+[add-theme]: https://github.com/aviortheking/codestats-readme/edit/master/themes/index.js
 
 Wanted to add a new theme? Consider reading the [contribution guidelines](../CONTRIBUTING.md#themes-contribution) :D
 `;
 
-const createRepoMdLink = (theme) => {
-  return `\n[${theme}_repo]: https://github-readme-stats.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&cache_seconds=86400&theme=${theme}`;
+const createRepoMdLink = (theme: string) => {
+  return `\n[${theme}_repo]: https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&theme=${theme}`;
 };
-const createStatMdLink = (theme) => {
-  return `\n[${theme}]: https://github-readme-stats.vercel.app/api?username=anuraghazra&show_icons=true&hide=contribs,prs&cache_seconds=86400&theme=${theme}`;
+const createStatMdLink = (theme: string) => {
+  return `\n[${theme}]: https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=${theme}`;
 };
 
-const generateLinks = (fn) => {
+const generateLinks = (fn: Function) => {
   return Object.keys(theme)
     .map((name) => fn(name))
     .join("");
 };
 
-const createTableItem = ({ link, label, isRepoCard }) => {
+const createTableItem = ({ link, label, isRepoCard }: {link: string, label: string, isRepoCard?: boolean}) => {
   if (!link || !label) return "";
   return `\`${label}\` ![${link}][${link}${isRepoCard ? "_repo" : ""}]`;
 };
-const generateTable = ({ isRepoCard }) => {
+const generateTable = ({ isRepoCard }: {isRepoCard?: boolean}) => {
   const rows = [];
   const themes = Object.keys(theme).filter(
     (name) => name !== (!isRepoCard ? "default_repocard" : "default")
