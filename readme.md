@@ -5,20 +5,37 @@
 </p>
 
 # Features
-
+- [Code::Stats Profile Card](#profile-card)
 - [Top Languages Card](#top-languages-card)
 - [Themes](#themes)
 - [Customization](#customization)
 - [Deploy Yourself](#deploy-on-your-own-vercel-instance)
 
-# GitHub Stats Card
+# Profile Card
 
 Copy paste this into your markdown content, and that's it. Simple!
 
 Change the `?username=` value to your GitHub's username.
 
 ```md
-[![Avior's code::stats stats](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking)](https://github.com/Aviortheking/codestats-readme)
+[![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking)](https://github.com/Aviortheking/codestats-readme)
+```
+### Hiding individual stats
+
+To hide any specific stats, you can pass a query parameter `?hide=` with comma separated values.
+
+> Options: `&hide=recent_xp,xp`
+
+```md
+![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&hide=xp,recent_xp)]
+```
+
+### Showing icons
+
+To enable icons, you can pass `show_icons=true` in the query param, like so:
+
+```md
+![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true)
 ```
 
 ### Themes
@@ -28,20 +45,18 @@ With inbuilt themes you can customize the look of the card without doing any [ma
 Use `?theme=THEME_NAME` parameter like so :-
 
 ```md
-![Anurag's github stats](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&theme=radical)
+![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=radical)
 ```
 
 #### All inbuilt themes :-
 
 dark, radical, merko, gruvbox, tokyonight, onedark, cobalt, synthwave, highcontrast, dracula
 
-<img src="https://res.cloudinary.com/anuraghazra/image/upload/v1595174536/grs-themes_l4ynja.png" alt="GitHub Readme Stat Themes" width="600px"/>
-
 You can look at a preview for [all available themes](./themes/README.md) or checkout the [theme config file](./themes/index.js) & **you can also contribute new themes** if you like :D
 
 ### Customization
 
-You can customize the appearance of your `Stats Card` or `Repo Card` however you want with URL params.
+You can customize the appearance of your Cards however you want with URL params.
 
 #### Common Options:
 
@@ -59,6 +74,14 @@ You can provide multiple comma separated values in bg_color option to render a g
 ```
 &bg_color=DEG,COLOR1,COLRO2,COLOR3...COLOR10
 ```
+
+#### Stats Card Exclusive Options:
+
+- `hide` - Hides the specified items from stats _(Comma seperated values)_
+- `hide_title` - _(boolean)_
+- `hide_rank` - _(boolean)_
+- `show_icons` - _(boolean)_
+- `line_height` - Sets the line-height between text _(number)_
 
 #### Language Card Exclusive Options:
 
@@ -129,7 +152,7 @@ You can change the default language count (5) using the `&language_count=10` opt
 
 Choose from any of the [default themes](#themes)
 
-![Anurag's github stats](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&show_icons=true&theme=radical)
+![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=radical)
 
 - Gradient
 
@@ -137,7 +160,7 @@ Choose from any of the [default themes](#themes)
 
 - Customizing stats card
 
-![Anurag's github stats](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&title_color=fff&icon_color=79ff97&text_color=9f9f9f&bg_color=151515)
+![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&title_color=fff&icon_color=79ff97&text_color=9f9f9f&bg_color=151515)
 
 - Top languages
 
@@ -151,7 +174,7 @@ You usually won't be able to layout the images side by side. To do that you can 
 
 ```md
 <a href="https://github.com/aviortheking/codestats-readme">
-  <img align="center" src="https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking" />
+  <img align="center" src="https://codestats-readme.vercel.app/api?username=aviortheking" />
 </a>
 <a href="https://github.com/aviortheking/codestats-readme">
   <img align="center" src="https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking" />
@@ -160,12 +183,7 @@ You usually won't be able to layout the images side by side. To do that you can 
 
 ## Deploy on your own Vercel instance
 
-
-Since the GitHub API only allows 5k requests per hour, it is possible that my `https://codestats-readme.vercel.app/api` could hit the rate limiter. If you host it on your own Vercel server, then you don't have to worry about anything. Click on the deploy button to get started!
-
-NOTE: Since [#58](https://github.com/anuraghazra/github-readme-stats/pull/58) we should be able to handle more than 5k requests and have no issues with downtime :D
-
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/anuraghazra/github-readme-stats)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/Aviortheking/codestats-readme/)
 
 <details>
  <summary><b> Guide on setting up Vercel  🔨 </b></summary>
