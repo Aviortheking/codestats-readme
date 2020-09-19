@@ -1,19 +1,20 @@
-import { CustomError, request } from './utils'
-import { AxiosPromise } from 'axios';
+import { CustomError } from './utils'
+import { CodeStatsResponse } from '../interfaces';
 
-const retryer = async <T = AxiosPromise<{error: string}>>(fetcher: (variables: {login: string}) => T, variables: {login: string}, retries = 0): Promise<T> => {
+export default async function retryer<T = Promise<CodeStatsResponse>>(
+	fetcher: (username: string) => T,
+	data: string,
+	retries = 0,
+	err?: any
+): Promise<T> {
 	if (retries > 7) {
-		throw new CustomError("Maximum retries exceeded", 'MAX_RETRY');
+		throw new CustomError("Maximum retries exceeded" + err, 'MAX_RETRY')
 	}
 	try {
-		let response = await fetcher(
-			variables
+		return await fetcher(
+			data
 		)
-
-		return response;
 	} catch (err) {
-		return retryer(fetcher, variables, 1 + retries);
+		return retryer(fetcher, data, ++retries, err)
 	}
-};
-
-export default retryer
+}

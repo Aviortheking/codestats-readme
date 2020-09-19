@@ -1,10 +1,10 @@
-import { renderError, clampValue, parseBoolean, parseArray, CONSTANTS} from '../src/common/utils'
+import { parseBoolean, parseArray, prepareResponse, setCache, parseNumber} from '../src/common/utils'
 import { fetchTopLanguages } from '../src/fetcher'
-import renderTopLanguages from '../src/cards/top-languages-card'
-import blacklist from '../src/common/blacklist'
+import TopLanguagesCard from '../src/cards/TopLanguagesCard'
 import { Request, Response } from 'express';
 import ReactDOMServer from 'react-dom/server'
-import themes from '../themes';
+import themes from '../themes/themes.json';
+import Error from '../src/components/Error';
 
 export interface query {
 	username: string
@@ -33,47 +33,35 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		text_color,
 		bg_color,
 		language_count,
-		show_level,
 		theme,
 		cache_seconds,
 		layout,
 	} = req.query;
 
-	res.setHeader("Content-Type", "image/svg+xml");
-
-	if (blacklist.includes(username)) {
-		return res.send(renderError("Something went wrong"));
-	}
+	prepareResponse(res)
 
 	try {
-		const topLangs = await fetchTopLanguages(username);
+		const topLangs = await fetchTopLanguages(username)
 
-		const cacheSeconds = clampValue(
-		parseInt(cache_seconds || CONSTANTS.TWO_HOURS + '', 10),
-		CONSTANTS.TWO_HOURS,
-		CONSTANTS.ONE_DAY
-		);
-
-		res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
+		setCache(res, parseInt(cache_seconds || ''))
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
-		renderTopLanguages(topLangs, {
-			hide_title: parseBoolean(hide_title),
-			hide_border: parseBoolean(hide_border),
-			card_width: parseInt(card_width || '', 10),
-			hide: parseArray(hide),
-			language_count: parseInt(language_count || '6'),
-			title_color,
-			text_color,
-			bg_color,
-			show_level,
-			theme,
-			layout,
-		}))
-		);
+			new TopLanguagesCard(username, topLangs.langs, {
+				hide: parseArray(hide),
+				language_count: parseNumber(language_count),
+				card_width: parseNumber(card_width),
+				layout,
+				text_color,
+				theme,
+				title_color,
+				bg_color,
+				hide_border: parseBoolean(hide_border),
+				hide_title: parseBoolean(hide_title)
+			}).render()
+		))
 	} catch (err) {
 		return res.send(
-			ReactDOMServer.renderToStaticMarkup(renderError(err.message, err.secondaryMessage))
-		);
+			ReactDOMServer.renderToStaticMarkup(new Error(err).render())
+		)
 	}
-};
+}

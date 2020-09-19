@@ -1,10 +1,10 @@
-import { renderError, parseBoolean, parseArray, CONSTANTS} from '../src/common/utils'
+import { parseBoolean, parseArray, prepareResponse, setCache} from '../src/common/utils'
 import { fetchProfile } from '../src/fetcher'
-import renderStatsCard from '../src/cards/profileCard'
-import blacklist from '../src/common/blacklist'
 import { Request, Response } from 'express';
 import ReactDOMServer from 'react-dom/server'
-import themes from '../themes';
+import themes from '../themes/themes.json';
+import ProfileCard from '../src/cards/ProfileCard';
+import Error from '../src/components/Error';
 
 export interface query {
 	username: string
@@ -36,39 +36,34 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		text_color,
 		bg_color,
 		theme,
+		cache_seconds
 	} = req.query;
 
-	res.setHeader("Content-Type", "image/svg+xml");
-
-	if (blacklist.includes(username)) {
-		return res.send(renderError("Username is in blacklist"));
-	}
+	prepareResponse(res)
 
 	try {
 		const data = await fetchProfile(username);
 
-		const cacheSeconds = CONSTANTS.TWO_HOURS
-
-		res.setHeader("Cache-Control", `public, max-age=${cacheSeconds}`);
+		setCache(res, parseInt(cache_seconds || ''))
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
-		renderStatsCard(data, {
-			hide: parseArray(hide),
-			show_icons: parseBoolean(show_icons),
-			hide_title: parseBoolean(hide_title),
-			hide_border: parseBoolean(hide_border),
-			hide_rank: parseBoolean(hide_rank),
-			line_height: line_height ? parseInt(line_height , 10) : undefined,
-			title_color,
-			icon_color,
-			text_color,
-			bg_color,
-			theme,
-		}))
-		);
+			new ProfileCard(data.username, data.xp, data.recentXp, {
+				hide: parseArray(hide),
+				show_icons: parseBoolean(show_icons),
+				hide_title: parseBoolean(hide_title),
+				hide_border: parseBoolean(hide_border),
+				hide_rank: parseBoolean(hide_rank),
+				line_height: line_height ? parseInt(line_height , 10) : undefined,
+				title_color,
+				icon_color,
+				text_color,
+				bg_color,
+				theme,
+			}).render()
+		))
 	} catch (err) {
 		return res.send(
-			ReactDOMServer.renderToStaticMarkup(renderError(err.message, err.secondaryMessage))
+			ReactDOMServer.renderToStaticMarkup(new Error(err).render())
 		);
 	}
 };

@@ -1,70 +1,115 @@
-import { request, logger, CONSTANTS, getLevel, CustomError } from '../common/utils'
+import { request, CONSTANTS, getLevel, profileGraphRequest, CustomError, formatDateNumber, formatDate, getColorOfLanguage } from '../common/utils'
 import retryer from '../common/retryer'
-import languageColor from '../../themes/language-bar.json'
-
-export interface data {
-	name: string
-	size: number
-	color: string
-	recentSize: number
-}
+import { CodeStatsHistoryGraph, TopLanguages } from '../interfaces'
 
 export async function fetchProfile(username: string) {
 	if (!username) throw Error('Invalid Username')
 
-	const response = await retryer(request, {login: username})
+	const response = await retryer(request, username)
 
 	return {
 		username,
-		xp: response.data.total_xp,
-		recentXp: response.data.new_xp,
-		level: getLevel(response.data.total_xp + response.data.new_xp)
+		xp: response.total_xp,
+		recentXp: response.new_xp,
+		level: getLevel(response.total_xp)
 	}
 }
 
-export async function fetchTopLanguages(username: string) {
-	if (!username) throw Error("Invalid username");
+export async function fetchHistory(username: string, days: number) {
+	if (!username) throw Error('Invalid Username')
 
-	let res = await retryer(request, { login: username });
+	const date = new Date()
+	date.setDate(date.getDate() - (days - 1))
 
-	let repoNodes = res.data.languages;
+	const body = `{
+		profile(username: "${username}") {
+			day_language_xps: dayLanguageXps(since: "${formatDate(date)}") {date language xp}
+		}
+	}`
 
-	// Remap nodes
-	const list = []
-	for (const key in repoNodes) {
-		const item = repoNodes[key]
-		list.push({
-			name: key,
-			color: key in languageColor ? languageColor[key as keyof typeof languageColor].color || '#000000' : '#000000',
-			xp: item.xps,
-			recentXp: item.new_xps + item.xps,
-			lvl: Math.trunc(Math.floor(CONSTANTS.LEVEL_FACTOR * Math.sqrt(item.xps)))
-		})
+	const response = await retryer<Promise<CodeStatsHistoryGraph>>(profileGraphRequest, body)
+	if (response.errors) {
+		throw new CustomError(response.errors[0].message, 'MAX_RETRY')
 	}
 
-	repoNodes = list
-		.filter((node) => {
-		return node.xp > 0;
+	const result: Record<string /* Date */, Array<{
+		xp: number
+		language: string
+	}>> = {}
+
+	const languagesData: Record<string, number> = {}
+
+	for (const data of response.data.profile.day_language_xps) {
+		let day = result[data.date]
+		if (!day) {
+			day = []
+		}
+		day.push({
+			xp: data.xp,
+			language: data.language
 		})
-		.sort((a, b) => b.xp - a.xp)
-		.reduce((acc, prev) => {
+		if (data.language in languagesData) {
+			languagesData[data.language] += data.xp
+		} else {
+			languagesData[data.language] = data.xp
+		}
+
+		result[data.date] = day
+	}
+
+	for (const key of Object.keys(result)) {
+		const item = result[key]
+		result[key] = item.sort((a, b) => languagesData[b.language] - languagesData[a.language])
+	}
+
+	const keys = Object.keys(result)
+
+	for (const day of keys) {
+		if (keys.indexOf(day) === 0 && day === formatDate(date)) {
+			continue
+		}
+		const date2 = new Date(day)
+		date2.setDate(date2.getDate() - 1)
+		const oldDate = formatDate(date2)
+		if (!(oldDate in result)) {
+			result[oldDate] = []
+		}
+
+	}
+
+	return Object.keys(result).map((el) => {
 		return {
-			...acc,
-			[prev.name]: {
-			name: prev.name,
-			color: prev.color,
-			size: prev.xp,
-			recentSize: prev.recentXp
-			},
-		};
-		}, {});
+			data: result[el],
+			day: el,
+			total: result[el].reduce((prvs, crnt) => prvs + crnt.xp, 0)
+		}
+	}).sort((a, b) => a.day < b.day ? 1 : -1)
 
-	const topLangs = Object.keys(repoNodes)
-		// .slice(0, 5)
-		.reduce((result: Record<string, any>, key) => {
-		result[key] = repoNodes[key];
-		return result;
-		}, {});
 
-	return topLangs as Record<string, data>
+}
+
+export async function fetchTopLanguages(username: string): Promise<TopLanguages> {
+	if (!username) throw Error("Invalid username")
+
+	let res = await retryer(request, username)
+
+	const langs = res.languages
+
+	const resp = Object.keys(langs)
+		.map((key) => {
+			const item = langs[key]
+			return {
+				xp: item.xps,
+				recentXp: item.new_xps,
+				color: getColorOfLanguage(key),
+				name: key,
+				level: getLevel(item.xps)
+			}
+		})
+		.sort((a, b) => (b.xp + b.recentXp) - (a.xp + a.recentXp))
+
+	return {
+		username,
+		langs: resp
+	}
 }

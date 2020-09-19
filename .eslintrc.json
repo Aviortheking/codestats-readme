@@ -1,0 +1,71 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+	"root": true,
+	"ignorePatterns": [
+		"out",
+		".next",
+		"node_modules",
+		"*.js"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"google",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:sonarjs/recommended",
+		"plugin:import/errors",
+		"plugin:import/warnings"
+	],
+	"globals": {
+		"Atomics": "readonly",
+		"SharedArrayBuffer": "readonly"
+	},
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "tsconfig.json",
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 2018,
+		"sourceType": "module"
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		},
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"]
+		},
+		"import/resolver": {
+			"typescript": {
+				"alwaysTryTypes": true // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+			}
+		}
+	},
+	"plugins": [
+		"react",
+		"@typescript-eslint",
+		"sonarjs",
+		"import"
+	],
+	"rules": {
+		"indent": ["error", "tab"],
+		"@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
+		"semi": ["error", "never"],
+		"no-tabs": "off",
+		"require-jsdoc": "off",
+		"no-invalid-this": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"max-len": ["warn", { "code": 120 }],
+		"object-curly-spacing": ["error", "always"],
+		"comma-dangle": ["error", "never"],
+		"padded-blocks": ["error", { "classes": "always" }],
+		"import/order": ["error"],
+		"import/no-named-as-default-member": "off",
+		"import/no-named-as-default": "off"
+	}
+}

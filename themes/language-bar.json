@@ -1071,6 +1071,9 @@
 		"color": null,
 		"url": "https://github.com/trending?l=OpenSCAD"
 	},
+	"Other": {
+		"color": "#b276b2"
+	},
 	"Ox": {
 		"color": null,
 		"url": "https://github.com/trending?l=Ox"

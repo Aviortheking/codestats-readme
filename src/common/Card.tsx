@@ -1,7 +1,16 @@
 import React from 'react'
+import themes from '../../themes/themes.json'
+import FlexLayout from '../components/FlexLayout'
 
-import { FlexLayout } from './utils'
-import { getAnimations } from '../getStyles'
+import { getColor, parseBoolean } from './utils'
+
+export interface CardOptions {
+	title_color?: string
+	bg_color?: string
+	hide_border?: boolean
+	hide_title?: boolean
+	theme?: keyof typeof themes
+}
 
 export default class Card {
 	public hideBorder = false
@@ -10,36 +19,24 @@ export default class Card {
 	public paddingX = 25
 	public paddingY = 35
 	public animations = true
+	public height = 100
+	public width = 100
+	public title = ''
+	public colors: {
+		titleColor?: string | Array<string>,
+		bgColor?: string | Array<string>
+	} = {}
+	public titlePrefix?: JSX.Element
 
-	constructor(
-		public width = 100,
-		public height = 100,
-		public colors: {titleColor?: string | Array<string>, textColor?: string | Array<string>, bgColor?: string | Array<string>, iconColor?: string | Array<string>} = {},
-		public title = "",
-		public titlePrefixIcon?: string
-	) {}
-
-	disableAnimations() {
-		this.animations = false;
-	}
-
-	setCSS(value: string) {
-		this.css = value;
-	}
-
-	setHideBorder(value: boolean) {
-		this.hideBorder = value;
-	}
-
-	setHideTitle(value: boolean) {
-		this.hideTitle = value;
-		if (value) {
-			this.height -= 30;
+	constructor(options?: CardOptions) {
+		if (options) {
+			this.hideBorder = parseBoolean(options.hide_border)
+			this.hideTitle = parseBoolean(options.hide_title)
+			this.colors = {
+				titleColor: getColor('title_color', options.title_color, options.theme),
+				bgColor: getColor('bg_color', options.bg_color, options.theme),
+			}
 		}
-	}
-
-	setTitle(text: string) {
-		this.title = text;
 	}
 
 	renderTitle() {
@@ -48,7 +45,6 @@ export default class Card {
 				x="0"
 				y="0"
 				className="header"
-				data-testid="header"
 			>{this.title}</text>
 		)
 
@@ -63,18 +59,17 @@ export default class Card {
 				width="16"
 				height="16"
 			>
-				${this.titlePrefixIcon}
+				{this.titlePrefix}
 			</svg>
 		)
 		return (
 			<g
-				data-testid="card-title"
 				transform={`translate(${this.paddingX}, ${this.paddingY})`}
 			>
-				{FlexLayout({
-					items: [this.titlePrefixIcon && prefixIcon, titleText],
-					gap: 25,
-				})}
+				<FlexLayout
+					items={[this.titlePrefix && prefixIcon, titleText]}
+					gap={25}
+				/>
 			</g>
 		)
 	}
@@ -104,7 +99,7 @@ export default class Card {
 		return (
 			<svg
 				width={this.width}
-				height={this.height}
+				height={this.height - (this.hideTitle ? 30 : 0)}
 				viewBox={`0 0 ${this.width} ${this.height}`}
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
@@ -117,17 +112,28 @@ export default class Card {
 					}
 					${this.css}
 
-					${
-						process.env.NODE_ENV === "test" || !this.animations
-						? ""
-						: getAnimations()
+					/* Animations */
+					@keyframes scaleInAnimation {
+						from {
+							transform: translate(-5px, 5px) scale(0);
+						}
+						to {
+							transform: translate(-5px, 5px) scale(1);
+						}
+					}
+					@keyframes fadeInAnimation {
+						from {
+							opacity: 0;
+						}
+						to {
+							opacity: 1;
+						}
 					}
 				`}</style>
 
 				{this.renderGradient()}
 
 				<rect
-					data-testid="card-bg"
 					x="0.5"
 					y="0.5"
 					rx="4.5"
@@ -145,7 +151,6 @@ export default class Card {
 				{this.hideTitle ? "" : this.renderTitle()}
 
 				<g
-					data-testid="main-card-body"
 					transform={`translate(0, ${
 						this.hideTitle ? this.paddingX : this.paddingY + 20
 					})`}
