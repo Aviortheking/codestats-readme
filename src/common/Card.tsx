@@ -34,8 +34,8 @@ export default class Card {
 			this.hideBorder = parseBoolean(options.hide_border)
 			this.hideTitle = parseBoolean(options.hide_title)
 			this.colors = {
-				titleColor: getColor('title_color', options.title_color, options.theme),
-				bgColor: getColor('bg_color', options.bg_color, options.theme)
+				titleColor: getColor('title_color', options?.title_color, options?.theme),
+				bgColor: getColor('bg_color', options?.bg_color, options?.theme)
 			}
 		}
 	}
