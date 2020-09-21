@@ -1,10 +1,10 @@
-import { parseBoolean, parseArray, prepareResponse, setCache, parseNumber} from '../src/common/utils'
+import { Request, Response } from 'express'
+import ReactDOMServer from 'react-dom/server'
+import { parseBoolean, parseArray, prepareResponse, setCache, parseNumber } from '../src/common/utils'
 import { fetchTopLanguages } from '../src/fetcher'
 import TopLanguagesCard from '../src/cards/TopLanguagesCard'
-import { Request, Response } from 'express';
-import ReactDOMServer from 'react-dom/server'
-import themes from '../themes/themes.json';
-import Error from '../src/components/Error';
+import themes from '../themes/themes.json'
+import Error from '../src/components/Error'
 
 export interface query {
 	username: string
@@ -35,8 +35,8 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		language_count,
 		theme,
 		cache_seconds,
-		layout,
-	} = req.query;
+		layout
+	} = req.query
 
 	prepareResponse(res)
 

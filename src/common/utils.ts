@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import { Response } from 'express'
 import wrap from 'word-wrap'
 import themes from '../../themes/themes.json'
-import { CodeStatsResponse } from '../interfaces';
+import { CodeStatsResponse } from '../interfaces'
 import languageColor from '../../themes/language-bar.json'
 
 /**
@@ -14,42 +14,38 @@ import languageColor from '../../themes/language-bar.json'
 export function encodeHTML(str: string) {
 	return str
 		.replace(/[\u00A0-\u9999<>&](?!#)/gim, (i) => {
-			return "&#" + i.charCodeAt(0) + ";";
+			return '&#' + i.charCodeAt(0) + ';'
 		})
-		.replace(/\u0008/gim, "");
 }
 
-export const kFormatter = (num: number) =>
-	Math.abs(num) > 999 ?
+export function kFormatter(num: number) {
+	return Math.abs(num) > 999 ?
 		trunc(num / 1000) + 'k' :
 		num
+}
 
 /**
- * Transform the `value` into a Boolean
+ * Transform the `value` query string into a Boolean
  * @param value the value to transform
  */
 export function parseBoolean(value: boolean | string | undefined) {
-	if (value === "true" || value === true) {
-		return true;
-	} else {
-		return false;
-	}
+	return value === 'true' || value === '' || value === true
 }
 
 export function parseArray(str: string | undefined) {
-	if (!str) return [];
-	return str.split(",");
+	if (!str) return []
+	return str.split(',')
 }
 
 export function clampValue(number: number, min: number, max?: number) {
-	return Math.max(min, max ? Math.min(number, max) : number);
+	return Math.max(min, max ? Math.min(number, max) : number)
 }
 
 export async function request(username: string): Promise<CodeStatsResponse> {
 	const resp = await fetch(
 		`https://codestats.net/api/users/${username}`
-	);
-	return resp.json();
+	)
+	return resp.json()
 }
 
 export async function profileGraphRequest<T>(body: string): Promise<T> {
@@ -63,25 +59,28 @@ export async function profileGraphRequest<T>(body: string): Promise<T> {
 	return resp.json()
 }
 
-export function getColor(color: keyof typeof themes.default, replacementColor?: string, theme: keyof typeof themes = 'default') {
+export function getColor(
+	color: keyof typeof themes.default,
+	replacementColor?: string,
+	theme: keyof typeof themes = 'default'
+) {
 	return '#' + (replacementColor ? replacementColor : themes[theme][color])
 }
 
 export function wrapTextMultiline(text: string, width = 60, maxLines = 3) {
 	const wrapped = wrap(encodeHTML(text), { width })
-		.split("\n") // Split wrapped lines to get an array of lines
-		.map((line) => line.trim()); // Remove leading and trailing whitespace of each line
+		.split('\n') // Split wrapped lines to get an array of lines
+		.map((line) => line.trim()) // Remove leading and trailing whitespace of each line
 
-	const lines = wrapped.slice(0, maxLines); // Only consider maxLines lines
+	const lines = wrapped.slice(0, maxLines) // Only consider maxLines lines
 
 	// Add "..." to the last line if the text exceeds maxLines
 	if (wrapped.length > maxLines) {
-		lines[maxLines - 1] += "...";
+		lines[maxLines - 1] += '...'
 	}
 
 	// Remove empty lines if text fits in less than maxLines lines
-	const multiLineText = lines.filter(Boolean);
-	return multiLineText;
+	return lines.filter(Boolean)
 }
 
 export const CONSTANTS = {
@@ -89,23 +88,25 @@ export const CONSTANTS = {
 	TWO_HOURS: 7200,
 	FOUR_HOURS: 14400,
 	ONE_DAY: 86400,
-	LEVEL_FACTOR: 0.025,
-};
+	LEVEL_FACTOR: 0.025
+}
 
 export const SECONDARY_ERROR_MESSAGES = {
-	MAX_RETRY: "Make sur your profile is not private"
-};
+	MAX_RETRY: 'Make sur your profile is not private'
+}
 
 export class CustomError extends Error {
+
 	public secondaryMessage: string
 
 	constructor(message: string, public type: keyof typeof SECONDARY_ERROR_MESSAGES) {
-		super(message);
-		this.secondaryMessage = SECONDARY_ERROR_MESSAGES[type] || "adsad";
+		super(message)
+		this.secondaryMessage = SECONDARY_ERROR_MESSAGES[type] || 'adsad'
 	}
 
-	static MAX_RETRY = "MAX_RETRY";
-	static USER_NOT_FOUND = "USER_NOT_FOUND";
+	static MAX_RETRY = 'MAX_RETRY'
+	static USER_NOT_FOUND = 'USER_NOT_FOUND'
+
 }
 
 /**
@@ -127,15 +128,19 @@ export function getProgress(xp: number): number {
 	return trunc((CONSTANTS.LEVEL_FACTOR * Math.sqrt(xp) - currentLvl) * 100, 2)
 }
 
+export function getPercent(number: number, total: number) {
+	return trunc(number * 100 / total, 2)
+}
+
 
 /**
- * Truncate a number without moving it to a string and reparsing it
+ * Round a number without moving it to a string and reparsing it
  *
  * https://stackoverflow.com/a/29494612/7335674
  * @param number the number to truncate
  * @param digits the number of digits after the dot
  */
-export function trunc(number: number, digits: number = 0) {
+export function trunc(number: number, digits = 0) {
 	const pow = Math.pow(10, digits)
 	return Math.round(number * pow) / pow
 }
@@ -152,14 +157,12 @@ export function parseNumber(number: string | number | undefined): number | undef
 }
 
 
-export function calculateCircleProgress(percent: number) {
-	let radius = 40;
-	let c = Math.PI * radius * 2
+export function calculateCircleProgress(percent: number, radius = 40) {
+	const c = Math.PI * radius * 2
 
 	percent = clampValue(percent, 0, 100)
 
-	let percentage = ((100 - percent) / 100) * c
-	return percentage;
+	return ((100 - percent) / 100) * c
 }
 
 /**
@@ -167,7 +170,7 @@ export function calculateCircleProgress(percent: number) {
  * @param res the response object
  */
 export function prepareResponse(res: Response) {
-	res.setHeader("Content-Type", "image/svg+xml")
+	res.setHeader('Content-Type', 'image/svg+xml')
 }
 
 /**
@@ -175,7 +178,7 @@ export function prepareResponse(res: Response) {
  * @param res the Response object
  * @param cache The cache time in seconds
  */
-export function setCache(res: Response, cache: number) {
+export function setCache(res: Response, cache = CONSTANTS.THIRTY_MINUTES) {
 	if (isNaN(cache)) {
 		cache = CONSTANTS.THIRTY_MINUTES
 	}
@@ -204,5 +207,5 @@ export function formatDate(date: Date): string {
 
 
 export function getColorOfLanguage(name: string): string {
-	return name in languageColor ? languageColor[name as keyof typeof languageColor].color || '#000' : '#000'
+	return name in languageColor ? languageColor[name as keyof typeof languageColor].color || '#3e4053' : '#3e4053'
 }

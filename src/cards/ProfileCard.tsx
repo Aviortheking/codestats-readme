@@ -1,7 +1,14 @@
-import { kFormatter, encodeHTML, getProgress, getLevel, parseBoolean, calculateCircleProgress, getColor } from '../common/utils'
+import React from 'react'
+import {
+	kFormatter,
+	encodeHTML,
+	getProgress,
+	getLevel,
+	calculateCircleProgress,
+	getColor
+} from '../common/utils'
 import icons from '../common/icons'
 import Card, { CardOptions } from '../common/Card'
-import React from 'react'
 import FlexLayout from '../components/FlexLayout'
 
 interface ProfileCardOptions extends CardOptions {
@@ -14,6 +21,7 @@ interface ProfileCardOptions extends CardOptions {
 }
 
 export default class ProfileCard extends Card {
+
 	private stats: Record<string, {
 		icon: JSX.Element
 		label: string
@@ -39,14 +47,14 @@ export default class ProfileCard extends Card {
 		this.stats = {
 			xp: {
 				icon: icons.star,
-				label: "XP",
-				value: xp,
+				label: 'XP',
+				value: xp
 			},
 			recent_xp: {
 				icon: icons.commits,
 				label: 'Recent xp',
-				value: this.recentXp,
-			},
+				value: this.recentXp
+			}
 		}
 
 		// Card Settings
@@ -57,7 +65,7 @@ export default class ProfileCard extends Card {
 		)
 
 		this.title = `${encodeHTML(this.username)}${
-			["x", "s"].includes(this.username.slice(-1)) ? "" : "s"
+			['x', 's'].includes(this.username.slice(-1)) ? '' : 's'
 		} Code::Stats Profile`
 
 		const textColor = getColor('text_color', options.text_color, options.theme)
@@ -67,7 +75,7 @@ export default class ProfileCard extends Card {
 			this.css += RankCircle.getCSS(textColor, iconColor, getProgress(xp))
 		}
 		if ((this.options.hide || []) < Object.keys(this.stats)) {
-			this.css += TextNode.getCSS(textColor, !!this.options.show_icons ? iconColor : undefined)
+			this.css += TextNode.getCSS(textColor, this.options.show_icons ? iconColor : undefined)
 		}
 	}
 
@@ -77,18 +85,23 @@ export default class ProfileCard extends Card {
 				<RankCircle xp={this.options.hide_rank ? undefined : this.xp} />
 				<svg x="0" y="0">
 					<FlexLayout
-						items={Object.keys(this.stats).filter((item) => !(this.options.hide || []).includes(item)).map((el, index) => {
-							const item = this.stats[el]
-							return (
-								<TextNode
-									{...item}
-									icon={!!this.options.show_icons ? item.icon : undefined}
-									key={index}
-									index={index}
+						items={
+							Object
+								.keys(this.stats)
+								.filter((item) => !(this.options.hide || []).includes(item))
+								.map((el, index) => {
+									const item = this.stats[el]
+									return (
+										<TextNode
+											{...item}
+											icon={this.options.show_icons ? item.icon : undefined}
+											key={index}
+											index={index}
 
-								/>
-							)
-						})}
+										/>
+									)
+								})
+						}
 						gap={this.options.line_height || this.defaults.line_height}
 						direction="column"
 					/>
@@ -96,6 +109,7 @@ export default class ProfileCard extends Card {
 			</>
 		)
 	}
+
 }
 
 class RankCircle extends React.Component<{
@@ -136,7 +150,7 @@ class RankCircle extends React.Component<{
 		}
 	`
 
-	public render () {
+	public render() {
 		if (!this.props.xp) {
 			return undefined
 		}
@@ -160,6 +174,7 @@ class RankCircle extends React.Component<{
 			</g>
 		)
 	}
+
 }
 
 class TextNode extends React.Component<{
@@ -200,7 +215,11 @@ class TextNode extends React.Component<{
 		) : undefined
 
 		return (
-			<g className="stagger" data-index={this.props.index} style={{animationDelay: `${delay}ms`}} transform="translate(25, 0)">
+			<g
+				className="stagger"
+				style={{ animationDelay: `${delay}ms` }}
+				transform="translate(25, 0)"
+			>
 				{icon}
 				<text className="stat bold" x={this.props.icon ? 25 : undefined} y="12.5">{this.props.label}:</text>
 				<text
@@ -211,4 +230,5 @@ class TextNode extends React.Component<{
 			</g>
 		)
 	}
+
 }

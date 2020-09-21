@@ -1,4 +1,4 @@
-import { request, CONSTANTS, getLevel, profileGraphRequest, CustomError, formatDateNumber, formatDate, getColorOfLanguage } from '../common/utils'
+import { request, getLevel, profileGraphRequest, CustomError, formatDate, getColorOfLanguage } from '../common/utils'
 import retryer from '../common/retryer'
 import { CodeStatsHistoryGraph, TopLanguages } from '../interfaces'
 
@@ -28,6 +28,7 @@ export async function fetchHistory(username: string, days: number) {
 	}`
 
 	const response = await retryer<Promise<CodeStatsHistoryGraph>>(profileGraphRequest, body)
+
 	if (response.errors) {
 		throw new CustomError(response.errors[0].message, 'MAX_RETRY')
 	}
@@ -48,23 +49,19 @@ export async function fetchHistory(username: string, days: number) {
 			xp: data.xp,
 			language: data.language
 		})
-		if (data.language in languagesData) {
-			languagesData[data.language] += data.xp
-		} else {
-			languagesData[data.language] = data.xp
+		if (!(data.language in languagesData)) {
+			languagesData[data.language] = 0
 		}
 
+		languagesData[data.language] += data.xp
 		result[data.date] = day
-	}
-
-	for (const key of Object.keys(result)) {
-		const item = result[key]
-		result[key] = item.sort((a, b) => languagesData[b.language] - languagesData[a.language])
 	}
 
 	const keys = Object.keys(result)
 
 	for (const day of keys) {
+		const item = result[day]
+		result[day] = item.sort((a, b) => languagesData[b.language] - languagesData[a.language])
 		if (keys.indexOf(day) === 0 && day === formatDate(date)) {
 			continue
 		}
@@ -77,21 +74,19 @@ export async function fetchHistory(username: string, days: number) {
 
 	}
 
-	return Object.keys(result).map((el) => {
-		return {
-			data: result[el],
-			day: el,
-			total: result[el].reduce((prvs, crnt) => prvs + crnt.xp, 0)
-		}
-	}).sort((a, b) => a.day < b.day ? 1 : -1)
+	return Object.keys(result).map((el) => ({
+		data: result[el],
+		day: el,
+		total: result[el].reduce((prvs, crnt) => prvs + crnt.xp, 0)
+	})).sort((a, b) => a.day < b.day ? 1 : -1)
 
 
 }
 
 export async function fetchTopLanguages(username: string): Promise<TopLanguages> {
-	if (!username) throw Error("Invalid username")
+	if (!username) throw Error('Invalid username')
 
-	let res = await retryer(request, username)
+	const res = await retryer(request, username)
 
 	const langs = res.languages
 

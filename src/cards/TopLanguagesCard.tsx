@@ -1,8 +1,8 @@
-import { getColor, getProgress, trunc } from "../common/utils"
-import Card, { CardOptions } from '../common/Card'
 import React from 'react'
-import FlexLayout from "../components/FlexLayout";
-import { TopLanguage } from "../interfaces";
+import { getColor, getPercent, getProgress, trunc } from '../common/utils'
+import Card, { CardOptions } from '../common/Card'
+import FlexLayout from '../components/FlexLayout'
+import { TopLanguage } from '../interfaces'
 
 interface TopLanguagesOptions extends CardOptions {
 	hide?: Array<string>
@@ -34,22 +34,23 @@ export default class TopLanguagesCard extends Card {
 		}
 
 		const textColor = getColor('text_color', options.text_color, options.theme)
-		this.title = "Most Used Languages"
+		this.title = 'Most Used Languages'
 		this.css = CompactTextNode.getCSS(textColor as string)
 	}
 
 	public render() {
+		const total = this.langs.reduce((acc, curr) => acc + curr.xp, 0)
 		if (this.options.layout === 'compact') {
 			this.width = this.width + 50
 			this.height = 90 + Math.round(this.langs.length / 2) * 25
 			return super.render(
 				<svg x="25">
 					<mask id="rect-mask">
-					<rect x="0" y="0" width={this.width - 50} height="8" fill="white" rx="5" />
+						<rect x="0" y="0" width={this.width - 50} height="8" fill="white" rx="5" />
 					</mask>
-					<CompactProgressBar langs={this.langs} parentWidth={this.width} />
+					<CompactProgressBar langs={this.langs} total={total} parentWidth={this.width} />
 					{this.langs.map((el, index) => (
-						<CompactTextNode key={index} index={index} lang={el} />
+						<CompactTextNode key={index} index={index} total={total} lang={el} />
 					))}
 				</svg>
 			)
@@ -58,29 +59,31 @@ export default class TopLanguagesCard extends Card {
 				<svg x="25">
 					<FlexLayout items={
 						this.langs.map((el, index) => (
-							<ProgressNode lang={el} parentWidth={this.width} />
+							<ProgressNode key={index} lang={el} total={total} parentWidth={this.width} />
 						))
 					}
-						gap={40}
-						direction="column"
+					gap={40}
+					direction="column"
 					/>
 				</svg>
 			)
 		}
 	}
+
 }
 
 class CompactProgressBar extends React.Component<{
 	langs: Array<TopLanguage>
 	parentWidth: number
+	total: number
 }> {
+
 	public render() {
 
 		let offset = 0
-		const totalSize = this.props.langs.reduce((acc, curr) => acc + curr.xp, 0)
 
 		return this.props.langs.map((lang, index) => {
-			const percent = trunc((lang.xp / totalSize) * (this.props.parentWidth - 50), 2)
+			const percent = trunc((lang.xp / this.props.total) * (this.props.parentWidth - 50), 2)
 			const progress = percent < 10 ? percent + 10 : percent
 
 			const output = (
@@ -92,7 +95,7 @@ class CompactProgressBar extends React.Component<{
 					y="0"
 					width={progress}
 					height="8"
-					fill={lang.color || "#858585"}
+					fill={lang.color || '#858585'}
 				/>
 			)
 
@@ -100,11 +103,13 @@ class CompactProgressBar extends React.Component<{
 			return output
 		})
 	}
+
 }
 
 class CompactTextNode extends React.Component<{
 	index: number
 	lang: TopLanguage
+	total: number
 }> {
 
 	public static getCSS = (textColor: string) => `
@@ -128,17 +133,19 @@ class CompactTextNode extends React.Component<{
 			<g transform={`translate(${x}, ${y})`}>
 				<circle cx="5" cy="6" r="5" fill={this.props.lang.color} />
 				<text data-testid="lang-name" x="15" y="10" className='lang-name'>
-					{this.props.lang.name} {getProgress(this.props.lang.xp)}%
+					{this.props.lang.name} {getPercent(this.props.lang.xp, this.props.total)}%
 				</text>
 			</g>
 		)
 	}
+
 }
 
 
 class ProgressNode extends React.Component<{
 	lang: TopLanguage
 	parentWidth: number
+	total: number
 }> {
 
 	private paddingRight = 60
@@ -146,12 +153,18 @@ class ProgressNode extends React.Component<{
 
 	public render() {
 		const width = this.props.parentWidth - this.paddingRight
-		const progress1 = getProgress(this.props.lang.xp)
-		const progress2 = getProgress(this.props.lang.xp - this.props.lang.recentXp)
+		const progress1 = getPercent(this.props.lang.xp, this.props.total)
+		const progress2 = getPercent(this.props.lang.xp - this.props.lang.recentXp, this.props.total)
 
 		return (
 			<>
-				<text data-testid="lang-name" x="2" y="15" className="lang-name">{this.props.lang.name} {progress1}% {this.props.lang.recentXp >= 1 ? ' + ' + (trunc(progress1 - progress2, 2)) + '%' : ''}</text>
+				<text
+					x="2"
+					y="15"
+					className="lang-name"
+				>
+					{this.props.lang.name} {progress1}% {this.props.lang.recentXp >= 1 ? ` + ${trunc(progress1 - progress2, 2)}%` : ''}
+				</text>
 				<svg width={width}>
 					<rect rx="5" ry="5" x="0" y="25" width={width} height="8" fill="#ddd" />
 					{progress1 !== progress2 && (
@@ -176,4 +189,5 @@ class ProgressNode extends React.Component<{
 			</>
 		)
 	}
+
 }

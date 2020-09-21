@@ -5,6 +5,7 @@ export default class FlexLayout extends React.Component<{
 	gap: number
 	direction?: 'column'
 }> {
+
 	public render() {
 		return this.props.items.filter(Boolean).map((item, index) => (
 			<g key={index} transform={this.getGap(index)}>{item}</g>
@@ -19,4 +20,5 @@ export default class FlexLayout extends React.Component<{
 		}
 		return transform
 	}
+
 }

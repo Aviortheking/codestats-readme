@@ -1,5 +1,5 @@
+import { CodeStatsResponse } from '../interfaces'
 import { CustomError } from './utils'
-import { CodeStatsResponse } from '../interfaces';
 
 export default async function retryer<T = Promise<CodeStatsResponse>>(
 	fetcher: (username: string) => T,
@@ -8,7 +8,7 @@ export default async function retryer<T = Promise<CodeStatsResponse>>(
 	err?: any
 ): Promise<T> {
 	if (retries > 7) {
-		throw new CustomError("Maximum retries exceeded" + err, 'MAX_RETRY')
+		throw new CustomError('Maximum retries exceeded' + err, 'MAX_RETRY')
 	}
 	try {
 		return await fetcher(

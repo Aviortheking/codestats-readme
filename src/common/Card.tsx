@@ -13,6 +13,7 @@ export interface CardOptions {
 }
 
 export default class Card {
+
 	public hideBorder = false
 	public hideTitle = false
 	public css = ''
@@ -34,7 +35,7 @@ export default class Card {
 			this.hideTitle = parseBoolean(options.hide_title)
 			this.colors = {
 				titleColor: getColor('title_color', options.title_color, options.theme),
-				bgColor: getColor('bg_color', options.bg_color, options.theme),
+				bgColor: getColor('bg_color', options.bg_color, options.theme)
 			}
 		}
 	}
@@ -75,24 +76,24 @@ export default class Card {
 	}
 
 	renderGradient() {
-		if (typeof this.colors.bgColor !== "object") return;
+		if (typeof this.colors.bgColor !== 'object') return
 
-		const gradients = this.colors.bgColor.slice(1);
-		return typeof this.colors.bgColor === "object"
-		? (
-			<defs>
-				<linearGradient
-					id="gradient"
-					gradientTransform={`rotate(${this.colors.bgColor[0]})`}
-				>
-					{gradients.map((grad, index) => {
-					let offset = (index * 100) / (gradients.length - 1);
-					return `<stop offset="${offset}%" stop-color="#${grad}" />`;
-					})}
-				</linearGradient>
-			</defs>
-		)
-		: "";
+		const gradients = this.colors.bgColor.slice(1)
+		return typeof this.colors.bgColor === 'object' ?
+			(
+				<defs>
+					<linearGradient
+						id="gradient"
+						gradientTransform={`rotate(${this.colors.bgColor[0]})`}
+					>
+						{gradients.map((grad, index) => {
+							const offset = (index * 100) / (gradients.length - 1)
+							return `<stop offset="${offset}%" stop-color="#${grad}" />`
+						})}
+					</linearGradient>
+				</defs>
+			) :
+			''
 	}
 
 	render(body: JSX.Element) {
@@ -141,14 +142,14 @@ export default class Card {
 					stroke="#E4E2E2"
 					width={this.width - 1}
 					fill={
-						typeof this.colors.bgColor === "object"
-						? "url(#gradient)"
-						: this.colors.bgColor
+						typeof this.colors.bgColor === 'object' ?
+							'url(#gradient)' :
+							this.colors.bgColor
 					}
 					strokeOpacity={this.hideBorder ? 0 : 1}
 				/>
 
-				{this.hideTitle ? "" : this.renderTitle()}
+				{this.hideTitle ? '' : this.renderTitle()}
 
 				<g
 					transform={`translate(0, ${
@@ -160,4 +161,5 @@ export default class Card {
 			</svg>
 		)
 	}
+
 }

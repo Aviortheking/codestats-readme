@@ -1,12 +1,15 @@
 import fs from 'fs'
-import theme from '../themes'
+import theme from '../themes/themes.json'
 
-const TARGET_FILE = "./themes/README.md";
-const REPO_CARD_LINKS_FLAG = "<!-- REPO_CARD_LINKS -->";
-const STAT_CARD_LINKS_FLAG = "<!-- STATS_CARD_LINKS -->";
+const BASE_URL = 'https://codestats-readme.vercel.app'
+// const BASE_URL = 'http://localhost:3000'
 
-const STAT_CARD_TABLE_FLAG = "<!-- STATS_CARD_TABLE -->";
-const REPO_CARD_TABLE_FLAG = "<!-- REPO_CARD_TABLE -->";
+const TARGET_FILE = './themes/README.md'
+const LINKS_FLAG = '<!-- LINKS_FLAG -->'
+
+const PROFILE_CARD_TABLE_FLAG = '<!-- PROFILE_TABLE -->'
+const TOP_LANGS_CARD_TABLE_FLAG = '<!-- TOP_LANGS_TABLE -->'
+const HISTORY_CARD_TABLE_FLAG = '<!-- HISTORY_TABLE -->'
 
 const THEME_TEMPLATE = `## Available Themes
 
@@ -17,99 +20,100 @@ With inbuilt themes you can customize the look of the card without doing any man
 Use \`?theme=THEME_NAME\` parameter like so :-
 
 \`\`\`md
-![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=dark&show_icons=true)
+![Anurag's github stats](${BASE_URL}/api?username=aviortheking&theme=dark&show_icons=true)
 \`\`\`
 
-## Stats
-
-> These themes work both for the Stats Card and Repo Card.
+## Profile
 
 | | | |
 | :--: | :--: | :--: |
-${STAT_CARD_TABLE_FLAG}
+${PROFILE_CARD_TABLE_FLAG}
 
-## Repo Card
-
-> These themes work both for the Stats Card and Repo Card.
+## History Card
 
 | | | |
 | :--: | :--: | :--: |
-${REPO_CARD_TABLE_FLAG}
+${HISTORY_CARD_TABLE_FLAG}
 
-${STAT_CARD_LINKS_FLAG}
+## Top Langs Card
 
-${REPO_CARD_LINKS_FLAG}
+| | | |
+| :--: | :--: | :--: |
+${TOP_LANGS_CARD_TABLE_FLAG}
 
+${LINKS_FLAG}
 
 [add-theme]: https://github.com/aviortheking/codestats-readme/edit/master/themes/index.js
 
 Wanted to add a new theme? Consider reading the [contribution guidelines](../CONTRIBUTING.md#themes-contribution) :D
-`;
+`
 
-const createRepoMdLink = (theme: string) => {
-  return `\n[${theme}_repo]: https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&theme=${theme}`;
-};
-const createStatMdLink = (theme: string) => {
-  return `\n[${theme}]: https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=${theme}`;
-};
+const createTopLangsMdLink = (theme: string) => {
+	return `\n[top_langs_${theme}]: ${BASE_URL}/api/top-langs/?username=aviortheking&theme=${theme}`
+}
+const createProfileMdLink = (theme: string) => {
+	return `\n[profile_${theme}]: ${BASE_URL}/api?username=aviortheking&show_icons=true&theme=${theme}`
+}
 
-const generateLinks = (fn: Function) => {
-  return Object.keys(theme)
-    .map((name) => fn(name))
-    .join("");
-};
+const createHistoryMdLink = (theme: string) => {
+	return `\n[history_${theme}]: ${BASE_URL}/api/history?username=Aviortheking&layout=horizontal&theme=${theme}`
+}
 
-const createTableItem = ({ link, label, isRepoCard }: {link: string, label: string, isRepoCard?: boolean}) => {
-  if (!link || !label) return "";
-  return `\`${label}\` ![${link}][${link}${isRepoCard ? "_repo" : ""}]`;
-};
-const generateTable = ({ isRepoCard }: {isRepoCard?: boolean}) => {
-  const rows = [];
-  const themes = Object.keys(theme).filter(
-    (name) => name !== (!isRepoCard ? "default_repocard" : "default")
-  );
+const generateLinks = (fn: typeof createHistoryMdLink) => {
+	return Object.keys(theme)
+		.map((name) => fn(name))
+		.join('')
+}
 
-  for (let i = 0; i < themes.length; i += 3) {
-    const one = themes[i];
-    const two = themes[i + 1];
-    const three = themes[i + 2];
+const createTableItem = ({ link, label }: {link: string, label: string}) => {
+	if (!link || !label) return ''
+	return `\`${label}\` ![${link}][${link}]`
+}
+const generateTable = (prefix: string) => {
+	const rows = []
+	const themes = Object.keys(theme)
 
-    let tableItem1 = createTableItem({ link: one, label: one, isRepoCard });
-    let tableItem2 = createTableItem({ link: two, label: two, isRepoCard });
-    let tableItem3 = createTableItem({ link: three, label: three, isRepoCard });
+	for (let i = 0; i < themes.length; i += 3) {
+		const one = prefix + themes[i]
+		const two = prefix + themes[i + 1]
+		const three = prefix + themes[i + 2]
 
-    if (three === undefined) {
-      tableItem3 = `[Add your theme][add-theme]`;
-    }
-    rows.push(`| ${tableItem1} | ${tableItem2} | ${tableItem3} |`);
+		const tableItem1 = createTableItem({ link: one, label: themes[i] })
+		const tableItem2 = createTableItem({ link: two, label: themes[i + 1] })
+		let tableItem3 = createTableItem({ link: three, label: themes[i + 2] })
 
-    // if it's the last row & the row has no empty space push a new row
-    if (three && i + 3 === themes.length) {
-      rows.push(`| [Add your theme][add-theme] | | |`);
-    }
-  }
+		if (three === undefined) {
+			tableItem3 = '[Add your theme][add-theme]'
+		}
+		rows.push(`| ${tableItem1} | ${tableItem2} | ${tableItem3} |`)
 
-  return rows.join("\n");
-};
+		// if it's the last row & the row has no empty space push a new row
+		if (three && i + 3 === themes.length) {
+			rows.push('| [Add your theme][add-theme] | | |')
+		}
+	}
+
+	return rows.join('\n')
+}
 
 const buildReadme = () => {
-  return THEME_TEMPLATE.split("\n")
-    .map((line) => {
-      if (line.includes(REPO_CARD_LINKS_FLAG)) {
-        return generateLinks(createRepoMdLink);
-      }
-      if (line.includes(STAT_CARD_LINKS_FLAG)) {
-        return generateLinks(createStatMdLink);
-      }
-      if (line.includes(REPO_CARD_TABLE_FLAG)) {
-        return generateTable({ isRepoCard: true });
-      }
-      if (line.includes(STAT_CARD_TABLE_FLAG)) {
-        return generateTable({ isRepoCard: false });
-      }
-      return line;
-    })
-    .join("\n");
-};
+	return THEME_TEMPLATE.split('\n')
+		.map((line) => {
+			if (line.includes(LINKS_FLAG)) {
+				return generateLinks(createTopLangsMdLink) + generateLinks(createHistoryMdLink) + generateLinks(createProfileMdLink)
+			}
+			if (line.includes(PROFILE_CARD_TABLE_FLAG)) {
+				return generateTable('profile_')
+			}
+			if (line.includes(TOP_LANGS_CARD_TABLE_FLAG)) {
+				return generateTable('top_langs_')
+			}
+			if (line.includes(HISTORY_CARD_TABLE_FLAG)) {
+				return generateTable('history_')
+			}
+			return line
+		})
+		.join('\n')
+}
 
-fs.writeFileSync(TARGET_FILE, buildReadme());
+fs.writeFileSync(TARGET_FILE, buildReadme())

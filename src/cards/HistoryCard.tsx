@@ -1,13 +1,16 @@
-import { formatDateNumber, getColorOfLanguage } from "../common/utils"
-import Card, { CardOptions } from '../common/Card'
 import React from 'react'
-import FlexLayout from "../components/FlexLayout"
+import { formatDateNumber, getColor, getColorOfLanguage } from '../common/utils'
+import Card, { CardOptions } from '../common/Card'
+import FlexLayout from '../components/FlexLayout'
 
 interface HistoryOptions extends CardOptions {
 	width?: number
 	height?: number
 	layout?: 'horizontal'
 	hide_legend?: boolean
+	text_color?: string
+	title?: string
+	reverse_order?: boolean
 
 	// Put language in Other
 	hide?: Array<string>
@@ -18,23 +21,19 @@ export default class HistoryCard extends Card {
 
 	private topLanguages: Array<string>
 
+	private legendMinWidth = 180
+
 	public constructor(
 		private username: string,
 		private days: Array<{day: string, total: number, data: Array<{xp: number, language: string}>}>,
 		private options: HistoryOptions
 	) {
 		super(options)
-
-		this.height = 45 + (this.days.length + 1) * 40
-		this.width = options.width ?? 500
-		if (options.layout === 'horizontal') {
-			this.width = 45 + (this.days.length + 1) * 40 + 100
-			this.height = options.height ?? 300
-		}
+		this.processOptions()
 
 		const languagesToHide = options.hide || []
 
-		let languageCount: Array<{language: string, xp: number}> = []
+		const languageCount: Array<{language: string, xp: number}> = []
 		for (const day of this.days) {
 			for (const data of day.data) {
 				let index = languageCount.findIndex((item) => item.language === data.language)
@@ -56,30 +55,57 @@ export default class HistoryCard extends Card {
 			this.topLanguages.push('Other')
 		}
 
+		this.hideLanguages(languagesToHide)
+	}
+
+	private hideLanguages(languagesToHide: Array<string>) {
 		for (const day of this.days) {
+			// Prepare array of indexes to remove
 			const toRemove: Array<number> = []
+
+			// Loop through data
 			for (let i = 0; i < day.data.length; i++) {
-				const element = day.data[i];
-				if (languagesToHide.includes(element.language)) {
-					const otherIndex = day.data.findIndex((el) => el.language === 'Other')
-					if (otherIndex === -1) {
-						day.data.push({
-							language: 'Other',
-							xp: element.xp
-						})
-					} else {
-						day.data[otherIndex].xp += element.xp
-					}
-					toRemove.push(i)
+				const element = day.data[i]
+
+				// If Language should not be hidden: goto next
+				if (!languagesToHide.includes(element.language)) {
+					continue
 				}
+
+				// Search indexOf 'Others'
+				const otherIndex = day.data.findIndex((el) => el.language === 'Others')
+				if (otherIndex === -1) {
+					day.data.push({
+						language: 'Others',
+						xp: element.xp
+					})
+				} else {
+					day.data[otherIndex].xp += element.xp
+				}
+				toRemove.push(i)
 			}
+
+			// Reverse array and remove each indexes
 			for (const index of toRemove.reverse()) {
 				day.data.splice(index, 1)
 			}
 		}
+	}
 
-		this.title = 'Code History Language breakdown'
-		this.css = ProgressNode.getCSS('#000')
+	private processOptions() {
+		this.height = 45 + (this.days.length + 1) * 40
+		this.width = this.options.width ?? 500
+		if (this.options.layout === 'horizontal') {
+			this.width = 45 + (this.days.length + 1) * 40 + (this.options.hide_legend ? 0 : this.legendMinWidth)
+			this.height = this.options.height ?? 300
+		}
+
+		this.title = this.options.title ?? `Last ${this.days.length} days XP history`
+		this.css = ProgressNode.getCSS(getColor('text_color', this.options.text_color, this.options.theme))
+
+		if (this.options.reverse_order) {
+			this.days = this.days.reverse()
+		}
 	}
 
 	public render() {
@@ -90,57 +116,71 @@ export default class HistoryCard extends Card {
 			return prvs
 		}, 0)
 
-		const legendWidth = Math.max(this.width * 20 / 100 + 60, 150)
+		const legendWidth = this.options.hide_legend ? 0 : Math.max(this.width * 20 / 100 + 60, this.legendMinWidth)
 		const historyWidth = this.width - legendWidth
-		return super.render(
-			<svg x="25">
-				<FlexLayout items={[(() => {
-					if (this.options.layout === 'horizontal') {
-						return (
-							<FlexLayout items={
-								this.days.reverse().map((el, index) => (
-									<VerticalProgressNode
-										{...el}
-										totalTotal={totalTotal} height={this.height - 120} />
-								))
-							}
-								gap={40}
-								// direction="column"
-							/>
-						)
-					} else {
-						return (
-							<FlexLayout items={
-								this.days.map((el, index) => (
-									<ProgressNode
-										{...el}
-										totalTotal={totalTotal} width={historyWidth - 30} />
-								))
-							}
-								gap={40}
-								direction="column"
-							/>
-						)
-					}
-				})(), (
-					<FlexLayout items={
+
+		const items: Array<JSX.Element> = []
+
+		// Format History bars
+		const history = this.options.layout === 'horizontal' ? (
+			<FlexLayout
+				key={0}
+				items={
+					this.days.reverse().map((el, index) => (
+						<VerticalProgressNode
+							key={index}
+							{...el}
+							totalTotal={totalTotal}
+							height={this.height - 120}
+						/>
+					))
+				}
+				gap={40}
+			/>
+		) : (
+			<FlexLayout
+				key={0}
+				items={
+					this.days.map((el, index) => (
+						<ProgressNode
+							key={index}
+							{...el}
+							totalTotal={totalTotal} width={historyWidth - 60} />
+					))
+				}
+				gap={40}
+				direction="column"
+			/>
+		)
+		items.push(history)
+
+		if (!this.options.hide_legend) {
+			items.push(
+				<FlexLayout
+					key={1}
+					items={
 						this.topLanguages.map((el, index) => (
-							<>
+							<React.Fragment key={index}>
 								<rect rx="5" x="2" y="7" height="12" width="12" fill={getColorOfLanguage(el)} />
 								<text x="18" y="18" className="lang-name" key={index}>{el}</text>
-							</>
+							</React.Fragment>
 						))
 					}
-						gap={20}
-						direction="column"
-					/>
-				)]}
-				gap={this.options.layout === 'horizontal' ? this.width - 180 : historyWidth - 20}
+					gap={20}
+					direction="column"
 				/>
+			)
+		}
 
+		return super.render(
+			<svg x="25">
+				<FlexLayout items={items}
+					gap={historyWidth}
+				/>
 			</svg>
 		)
 	}
+
 }
 
 
@@ -159,7 +199,7 @@ class ProgressNode extends React.Component<{
 	}
 	.xp-txt {
 		font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif;
-		fill: ${textColor};
+		fill: black;
 	}
 	.xp-txt-invert {
 		font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -197,27 +237,30 @@ class ProgressNode extends React.Component<{
 							/>
 						)
 					})}
-					{(() => {
-						let size = this.calcSize(offset) + 6
-						const txtSize = (this.props.total.toString().length + 3) * 8
-						let classes = 'xp-txt'
-						if (size + txtSize >= this.calcSize(this.props.totalTotal)) {
-							size -= txtSize
-							classes += ' xp-txt-invert'
-						}
-						return (
-							<text x={size} y="33" className={classes}>{this.props.total} XP</text>
-						)
-					})()}
+					{this.getXPText(offset)}
 
 				</svg>
 			</>
 		)
 	}
 
-	protected calcSize(number: number) {
+	private calcSize(number: number) {
 		return number * this.props.width / this.props.totalTotal
 	}
+
+	private getXPText(offset: number) {
+		let size = this.calcSize(offset) + 6
+		const txtSize = (this.props.total.toString().length + 3) * 8
+		let classes = 'xp-txt'
+		if (size + txtSize >= this.calcSize(this.props.totalTotal)) {
+			size -= txtSize
+			classes += ' xp-txt-invert'
+		}
+		return (
+			<text x={size} y="33" className={classes}>{this.props.total} XP</text>
+		)
+	}
+
 }
 
 
@@ -228,6 +271,7 @@ class VerticalProgressNode extends React.Component<{
 	data: Array<{xp: number, language: string}>
 	height: number
 }> {
+
 	public render() {
 		let offset = this.props.totalTotal
 		const maskId = `mask-${this.props.day}`
@@ -244,26 +288,26 @@ class VerticalProgressNode extends React.Component<{
 						offset -= el.xp
 						return (
 							<rect
-							key={index}
-							mask={`url(#${maskId})`}
-							width="16"
-							fill={color}
-							y={25 + this.calcSize(offset)}
-							x="0"
-							height={`${this.calcSize(el.xp)}px`}
+								key={index}
+								mask={`url(#${maskId})`}
+								width="16"
+								fill={color}
+								y={25 + this.calcSize(offset)}
+								x="0"
+								height={`${this.calcSize(el.xp)}px`}
 							/>
-							)
-						})}
+						)
+					})}
 					{this.getXPTxt()}
 
 				</svg>
 				<text x="2" y={this.props.height + 18} className="subtitle">{new Date(this.props.day).toDateString().substr(4, 3)}</text>
-				<text x="5" y={this.props.height + 34} className="subtitle">{formatDateNumber(new Date(this.props.day).getDate())}</text>
+				<text x="6" y={this.props.height + 34} className="subtitle">{formatDateNumber(new Date(this.props.day).getDate())}</text>
 			</>
 		)
 	}
 
-	protected calcSize(number: number) {
+	private calcSize(number: number) {
 		return number * this.props.height / this.props.totalTotal
 	}
 
@@ -279,4 +323,5 @@ class VerticalProgressNode extends React.Component<{
 			<text transform={`rotate(90, 4, ${position})`} letterSpacing="5" y={position} x="4" rotate="-90" className={classes}>{this.props.total} XP</text>
 		)
 	}
+
 }
