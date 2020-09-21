@@ -106,7 +106,7 @@ Use `?theme=THEME_NAME` parameter like so :-
 ![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=nightowl)
 ```
 
-![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=nightowl])
+![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=nightowl)
 
 #### All inbuilt themes :-
 
