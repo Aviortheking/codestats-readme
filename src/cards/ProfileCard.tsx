@@ -65,7 +65,7 @@ export default class ProfileCard extends Card {
 		)
 
 		this.title = `${encodeHTML(this.username)}${
-			['x', 's'].includes(this.username.slice(-1)) ? '' : 's'
+			['x', 's'].includes(this.username.slice(-1)) ? '\'' : '\'s'
 		} Code::Stats Profile`
 
 		const textColor = getColor('text_color', options.text_color, options.theme)

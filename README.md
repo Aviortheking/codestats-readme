@@ -103,10 +103,10 @@ With inbuilt themes you can customize the look of the card without doing any [ma
 Use `?theme=THEME_NAME` parameter like so :-
 
 ```md
-![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=tokyonight)
+![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=nightowl)
 ```
 
-![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=tokyonight])
+![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=nightowl])
 
 #### All inbuilt themes :-
 
