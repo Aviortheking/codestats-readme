@@ -82,7 +82,9 @@ export default class ProfileCard extends Card {
 	public render() {
 		return super.render(
 			<>
-				<RankCircle xp={this.options.hide_rank ? undefined : this.xp} />
+				{!this.options.hide_rank && (
+					<RankCircle xp={this.xp} />
+				)}
 				<svg x="0" y="0">
 					<FlexLayout
 						items={
@@ -113,7 +115,7 @@ export default class ProfileCard extends Card {
 }
 
 class RankCircle extends React.Component<{
-	xp?: number
+	xp: number
 }> {
 
 	public static getCSS = (textColor: string, titleColor: string, progress: number) => `
@@ -150,30 +152,24 @@ class RankCircle extends React.Component<{
 		}
 	`
 
-	public render() {
-		if (!this.props.xp) {
-			return undefined
-		}
-
-		return (
-			<g data-testid="rank-circle"
-				transform="translate(400, 0)">
-				<circle className="rank-circle-rim" cx="-10" cy="8" r="40" />
-				<circle className="rank-circle" cx="-10" cy="8" r="40" />
-				<g className="rank-text">
-					<text
-						x="-4"
-						y="0"
-						alignmentBaseline="central"
-						dominantBaseline="central"
-						textAnchor="middle"
-					>
-						lv {getLevel(this.props.xp)}
-					</text>
-				</g>
+	public render = () => (
+		<g data-testid="rank-circle"
+			transform="translate(400, 0)">
+			<circle className="rank-circle-rim" cx="-10" cy="8" r="40" />
+			<circle className="rank-circle" cx="-10" cy="8" r="40" />
+			<g className="rank-text">
+				<text
+					x="-4"
+					y="0"
+					alignmentBaseline="central"
+					dominantBaseline="central"
+					textAnchor="middle"
+				>
+					lv {getLevel(this.props.xp)}
+				</text>
 			</g>
-		)
-	}
+		</g>
+	)
 
 }
 

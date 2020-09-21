@@ -5,11 +5,12 @@
 </p>
 
 # Features
-- [Code::Stats Profile Card](#profile-card)
+
+- [Features](#features)
+- [Profile Card](#profile-card)
+- [History Card](#history-card)
 - [Top Languages Card](#top-languages-card)
-- [Themes](#themes)
-- [Customization](#customization)
-- [Deploy Yourself](#deploy-on-your-own-vercel-instance)
+- [Common Options](#common-options)
 
 # Profile Card
 
@@ -20,89 +21,47 @@ Change the `?username=` value to your GitHub's username.
 ```md
 [![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking)](https://github.com/Aviortheking/codestats-readme)
 ```
-### Hiding individual stats
 
-To hide any specific stats, you can pass a query parameter `?hide=` with comma separated values.
+### Options
 
-> Options: `&hide=recent_xp,xp`
+| Option Name | Preview                                                                                         | Description                                                 |
+| ----------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| hide        | ![](https://codestats-readme.vercel.app/api?username=aviortheking&hide=xp)                      | Hide specific line, ex: `&hide=xp` or `&hide=xp,recent_xp`  |
+| show_icons  | ![](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons)                   | shows icons before each lines ex: `&show_icons`             |
+| hide_rank   | ![](https://codestats-readme.vercel.app/api?username=aviortheking&hide_rank)                    | hide the rank circle ex: `&hide_rank`                       |
+| line_height | ![](https://codestats-readme.vercel.app/api?username=aviortheking&line_height=45)               | change the line Height of each lines, ex: `&line_height=45` |
+| icon_color  | ![](https://codestats-readme.vercel.app/api?username=aviortheking&icon_color=123456&show_icons) | change the icons color, ex: `&icon_color=123456&show_icons` |
+| text_color  | ![](https://codestats-readme.vercel.app/api?username=aviortheking&text_color=123456)            | change the text colors, ex: `&text_color=123456`            |
 
-```md
-![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&hide=xp,recent_xp)]
-```
+# History Card
 
-### Showing icons
+Shows your XP history as it's shown on your profile.
 
-To enable icons, you can pass `show_icons=true` in the query param, like so:
+Copy-paste this code into your readme and change the links.
 
-```md
-![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true)
-```
-
-### Themes
-
-With inbuilt themes you can customize the look of the card without doing any [manual customization](#customization).
-
-Use `?theme=THEME_NAME` parameter like so :-
+Endpoint: `api/history?username=anuraghazra`
 
 ```md
-![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=radical)
+[![History](https://codestats-readme.vercel.app/api/history/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
 ```
 
-#### All inbuilt themes :-
+### Options
 
-dark, radical, merko, gruvbox, tokyonight, onedark, cobalt, synthwave, highcontrast, dracula
-
-You can look at a preview for [all available themes](./themes/README.md) or checkout the [theme config file](./themes/index.js) & **you can also contribute new themes** if you like :D
-
-### Customization
-
-You can customize the appearance of your Cards however you want with URL params.
-
-#### Common Options:
-
-- `title_color` - Card's title color _(hex color)_
-- `text_color` - Body text color _(hex color)_
-- `icon_color` - Icons color if available _(hex color)_
-- `bg_color` - Card's background color _(hex color)_ **or** a gradient in the form of _angle,start,end_
-- `theme` - name of the theme, choose from [all available themes](./themes/README.md)
-- `cache_seconds` - set the cache header manually _(min: 1800, max: 86400)_
-
-##### Gradient in bg_color
-
-You can provide multiple comma separated values in bg_color option to render a gradient, the format of the gradient is :-
-
-```
-&bg_color=DEG,COLOR1,COLRO2,COLOR3...COLOR10
-```
-
-#### Stats Card Exclusive Options:
-
-- `hide` - Hides the specified items from stats _(Comma seperated values)_
-- `hide_title` - _(boolean)_
-- `hide_rank` - _(boolean)_
-- `show_icons` - _(boolean)_
-- `line_height` - Sets the line-height between text _(number)_
-
-#### Language Card Exclusive Options:
-
-- `hide` - Hide the languages specified from the card _(Comma separated values)_
-- `hide_title` - _(boolean)_
-- `layout` - Switch between two available layouts `default` & `compact`
-- `card_width` - Set the card's width manually _(number)_
-
-> :warning: **Important:**  
-> Language names should be uri-escaped, as specified in [Percent Encoding](https://en.wikipedia.org/wiki/Percent-encoding)  
-> (i.e: `c++` should become `c%2B%2B`, `jupyter notebook` should become `jupyter%20notebook`, etc.)
-
----
+| Option Name    | Preview                                                                                                 | Description                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| layout         | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&layout=horizontal)            | Change the layout to the horizontal one<br />ex: `&layout=horizontal`                                       |
+| height         | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&height=400&layout=horizontal) | Change the height of the card _Only on horizontal layout_<br />ex: `&height=400`<br />Default: `300`        |
+| width          | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&width=400)                    | Change the width of the card _Only on vertical layout_<br />ex: `&width=TypeScript`<br />Default: `500`     |
+| title          | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&title=History)                | Change the title of the card<br />ex: `&title=History`                                                      |
+| days_count     | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&days_count=7)                 | Change the number of days shown<br />ex: `&days_count=7` <br />Default: `14`                                |
+| reverse_order  | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&reverse_order)                | Reverse the order of the days<br />ex: `&reverse_order`                                                     |
+| hide           | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&hide=Typescript)              | Hide specifics languages and put them in Others<br />ex: `&hide=TypeScript`                                 |
+| language_count | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&language_count=3)             | Change the number of languages shown before going to Others<br />ex: `&language_count=3`<br />defaults: `8` |
+| text_color     | ![](https://codestats-readme.vercel.app/api/history?username=Aviortheking&text_color=654321)            | change the text colors<br />ex: `&text_color=654321`                                                        |
 
 # Top Languages Card
 
-Top languages card shows github user's top languages.
-
-_NOTE: Top languages does not indicate your skill level or something like that, it's a metric of which languages you have the coded the most._
-
-### Usage
+Top languages card shows user's top languages.
 
 Copy-paste this code into your readme and change the links.
 
@@ -112,63 +71,46 @@ Endpoint: `api/top-langs?username=anuraghazra`
 [![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
 ```
 
-### Hide individual languages
+### Options
 
-You can use `?hide=language1,language2` parameter to hide individual languages.
+| Option Name    | Preview                                                                                        | Description                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| hide           | ![](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&hide=TypeScript)   | Hide Specific language<br />ex: `&hide=TypeScript` or `&hide=TypeScript,TypeScript%20(JSX)`                 |
+| language_count | ![](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&language_count=3)  | Change the number of languages shown before going to Others<br />ex: `&language_count=3`<br />defaults: `8` |
+| card_width     | ![](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&card_width=250)    | hide the rank circle<br />ex: `&card_width=600`<br />defaults: `300`                                        |
+| layout         | ![](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&layout=compact)    | make the layout more compact<br />ex: `&layout=compact`                                                     |
+| text_color     | ![](https://codestats-readme.vercel.app/api/top-langs?username=aviortheking&text_color=654321) | change the text colors<br />ex: `&text_color=654321`                                                        |
+
+# Common Options
+
+| Options Name  | Preview                                                                                | Description                                                                                                                |
+| ------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| title_color   | ![](https://codestats-readme.vercel.app/api?username=aviortheking&title_color=654321)  | Change the title color<br />ex: `&title_color=654321`                                                                      |
+| bg_color      | ![](https://codestats-readme.vercel.app/api?username=aviortheking&bg_color=654321)     | Change the background color<br />ex: `&bg_color=654321`                                                                    |
+| hide_border   | ![](https://codestats-readme.vercel.app/api?username=aviortheking&hide_border)         | Hide the border<br />ex: `&hide_border`                                                                                    |
+| hide_title    | ![](https://codestats-readme.vercel.app/api?username=aviortheking&hide_title)          | Hide the title<br />ex: `&hide_border`                                                                                     |
+| theme         | ![](https://codestats-readme.vercel.app/api?username=aviortheking&theme=radical)       | See [#themes](Themes)                                                                                                      |
+| cache_seconds | ![](https://codestats-readme.vercel.app/api?username=aviortheking&cache_seconds=86400) | set the cache header manually _(min: 1800, max: 86400)_<br />ex: `&cache_seconds=86400`<br />Default: `1800` or 30 minutes |
+
+With inbuilt themes you can customize the look of the card without doing any [manual customization](#customization).
+
+Use `?theme=THEME_NAME` parameter like so :-
 
 ```md
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&hide=javascript,html)](https://github.com/aviortheking/codestats-readme)
+![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=radical)
 ```
 
-### Compact Language Card Layout
+![Aviortheking's Code::Stats stats](https://codestats-readme.vercel.app/api?username=aviortheking&theme=radical])
 
-You can use the `&layout=compact` option to change the card design.
+#### All inbuilt themes :-
 
-```md
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&layout=compact)](https://github.com/aviortheking/codestats-readme)
-```
+dark, radical, merko, gruvbox, tokyonight, onedark, cobalt, synthwave, highcontrast, dracula
 
-### Language Count 
-
-You can change the default language count (5) using the `&language_count=10` option.
-
-```md
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&language_count=10)](https://github.com/aviortheking/codestats-readme)
-```
-
-### Demo
-
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
-
-- Compact layout
-
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&layout=compact)](https://github.com/aviortheking/codestats-readme)
+You can look at a preview for [all available themes](./themes/README.md) or checkout the [theme config file](./themes/index.js) & **you can also contribute new themes** if you like :D
 
 ---
 
-### All Demos
-
-- Themes
-
-Choose from any of the [default themes](#themes)
-
-![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&show_icons=true&theme=radical)
-
-- Gradient
-
-![Anurag's github stats](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking&bg_color=30,e96443,904e95&title_color=fff&text_color=fff)
-
-- Customizing stats card
-
-![Anurag's github stats](https://codestats-readme.vercel.app/api?username=aviortheking&title_color=fff&icon_color=79ff97&text_color=9f9f9f&bg_color=151515)
-
-- Top languages
-
-[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
-
----
-
-### Quick Tip (Align The Repo Cards)
+### Quick Tip (Align your Cards)
 
 You usually won't be able to layout the images side by side. To do that you can use this approach:
 
@@ -189,20 +131,20 @@ You usually won't be able to layout the images side by side. To do that you can 
  <summary><b> Guide on setting up Vercel  🔨 </b></summary>
 
 1. Go to [vercel.com](https://vercel.com/)
-1. Click on `Log in`  
+2. Click on `Log in`
    ![](https://files.catbox.moe/tct1wg.png)
-1. Sign in with GitHub by pressing `Continue with GitHub`  
+3. Sign in with GitHub by pressing `Continue with GitHub`
    ![](https://files.catbox.moe/btd78j.jpeg)
-1. Sign into GitHub and allow access to all repositories, if prompted
-1. Fork this repo
-1. Go back to your [Vercel dashboard](https://vercel.com/dashboard)
-1. Select `Import Project`  
+4. Sign into GitHub and allow access to all repositories, if prompted
+5. Fork this repo
+6. Go back to your [Vercel dashboard](https://vercel.com/dashboard)
+7. Select `Import Project`
    ![](https://files.catbox.moe/qckos0.png)
-1. Select `Import Git Repository`  
+8. Select `Import Git Repository`
    ![](https://files.catbox.moe/pqub9q.png)
-1. Select root and keep everything as is (leave everything as is, just name it something, it can be anything you want)
+9. Select root and keep everything as is (leave everything as is, just name it something, it can be anything you want)
    ![](https://files.catbox.moe/0ez4g7.png)
-1. Click deploy, and you're good to go. See your domains to use the API!
+10. Click deploy, and you're good to go. See your domains to use the API!
 
 </details>
 
