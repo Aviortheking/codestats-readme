@@ -22,6 +22,8 @@ Change the `?username=` value to your GitHub's username.
 [![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking)](https://github.com/Aviortheking/codestats-readme)
 ```
 
+[![Avior's code::stats stats](https://codestats-readme.vercel.app/api?username=aviortheking)](https://github.com/Aviortheking/codestats-readme)
+
 ### Options
 
 | Option Name | Preview                                                                                         | Description                                                 |
@@ -39,11 +41,13 @@ Shows your XP history as it's shown on your profile.
 
 Copy-paste this code into your readme and change the links.
 
-Endpoint: `api/history?username=anuraghazra`
+Endpoint: `api/history?username=Aviortheking`
 
 ```md
-[![History](https://codestats-readme.vercel.app/api/history/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
+[![History](https://codestats-readme.vercel.app/api/history/?username=Aviortheking)](https://github.com/aviortheking/codestats-readme)
 ```
+
+[![History](https://codestats-readme.vercel.app/api/history/?username=Aviortheking)](https://github.com/aviortheking/codestats-readme)
 
 ### Options
 
@@ -70,6 +74,8 @@ Endpoint: `api/top-langs?username=anuraghazra`
 ```md
 [![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
 ```
+
+[![Top Langs](https://codestats-readme.vercel.app/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
 
 ### Options
 
