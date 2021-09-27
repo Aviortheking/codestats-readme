@@ -92,7 +92,7 @@ export const CONSTANTS = {
 }
 
 export const SECONDARY_ERROR_MESSAGES = {
-	MAX_RETRY: 'Make sur your profile is not private'
+	MAX_RETRY: 'Make sure your profile is not private'
 }
 
 export class CustomError extends Error {
