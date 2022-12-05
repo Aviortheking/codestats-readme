@@ -5,11 +5,15 @@
 		"allowJs": true,
 		"checkJs": true,
 		"jsx": "react",
+		"outDir": "dist",
 
 		"strict": true,
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true
-	}
+	},
+	"files": [
+		"index.ts"
+	]
 }

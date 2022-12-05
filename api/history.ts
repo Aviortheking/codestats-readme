@@ -53,7 +53,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 	try {
 		const data = await fetchHistory(username, clampValue(parseNumber(days_count) || 14, 1, 30))
 
-		setCache(res, parseInt(cache_seconds || ''))
+		setCache(res, parseInt(cache_seconds || '', 10))
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
 			new HistoryCard(username, data, {
@@ -73,7 +73,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		))
 	} catch (err) {
 		return res.send(
-			ReactDOMServer.renderToStaticMarkup(new Error(err).render())
+			ReactDOMServer.renderToStaticMarkup(new Error(err as any).render())
 		)
 	}
 }
