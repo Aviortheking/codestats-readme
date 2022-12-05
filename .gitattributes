@@ -1,1 +1,4 @@
-dist/* linguist-vendored=false
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary

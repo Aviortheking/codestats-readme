@@ -49,7 +49,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 	try {
 		const data = await fetchProfile(username)
 
-		setCache(res, parseInt(cache_seconds || ''))
+		setCache(res, parseInt(cache_seconds || '', 10))
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
 			new ProfileCard(data.username, data.xp, data.recentXp, {
@@ -68,7 +68,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		))
 	} catch (err) {
 		return res.send(
-			ReactDOMServer.renderToStaticMarkup(new Error(err).render())
+			ReactDOMServer.renderToStaticMarkup(new Error(err as any).render())
 		)
 	}
 }

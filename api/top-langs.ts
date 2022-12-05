@@ -43,7 +43,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 	try {
 		const topLangs = await fetchTopLanguages(username)
 
-		setCache(res, parseInt(cache_seconds || ''))
+		setCache(res, parseInt(cache_seconds || '', 10))
 
 		return res.send(ReactDOMServer.renderToStaticMarkup(
 			new TopLanguagesCard(username, topLangs.langs, {
@@ -61,7 +61,7 @@ export default async (req: Request<unknown, unknown, unknown, query>, res: Respo
 		))
 	} catch (err) {
 		return res.send(
-			ReactDOMServer.renderToStaticMarkup(new Error(err).render())
+			ReactDOMServer.renderToStaticMarkup(new Error(err as any).render())
 		)
 	}
 }
