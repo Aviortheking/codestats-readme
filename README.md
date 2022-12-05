@@ -69,7 +69,7 @@ Top languages card shows user's top languages.
 
 Copy-paste this code into your readme and change the links.
 
-Endpoint: `api/top-langs?username=anuraghazra`
+Endpoint: `api/top-langs?username=aviortheking`
 
 ```md
 [![Top Langs](https://codestats-readme.avior.me/api/top-langs/?username=aviortheking)](https://github.com/aviortheking/codestats-readme)
@@ -129,34 +129,18 @@ You usually won't be able to layout the images side by side. To do that you can 
 </a>
 ```
 
-## Deploy on your own Vercel instance
+## Deploy on your own Server
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/Aviortheking/codestats-readme/)
 
 <details>
- <summary><b> Guide on setting up Vercel  🔨 </b></summary>
 
-1. Go to [vercel.com](https://vercel.com/)
-2. Click on `Log in`
-   ![](https://files.catbox.moe/tct1wg.png)
-3. Sign in with GitHub by pressing `Continue with GitHub`
-   ![](https://files.catbox.moe/btd78j.jpeg)
-4. Sign into GitHub and allow access to all repositories, if prompted
-5. Fork this repo
-6. Go back to your [Vercel dashboard](https://vercel.com/dashboard)
-7. Select `Import Project`
-   ![](https://files.catbox.moe/qckos0.png)
-8. Select `Import Git Repository`
-   ![](https://files.catbox.moe/pqub9q.png)
-9. Select root and keep everything as is (leave everything as is, just name it something, it can be anything you want)
-   ![](https://files.catbox.moe/0ez4g7.png)
-10. Click deploy, and you're good to go. See your domains to use the API!
+1. Build the Docker image `docker build . --tag your-tag`
+2. run the Docker image `docker run your-tag`
+3. Profit on the port 3000!
 
 </details>
 
 ---
-
-![https://vercel.com](https://res.cloudinary.com/anuraghazra/image/upload/v1597827714/powered-by-vercel_1_ug4uro.svg)
 
 Contributions are welcomed! <3
 
