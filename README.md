@@ -4,6 +4,15 @@
  <p align="center">Get dynamically generated Code::Stats stats on your readmes!</p>
 </p>
 
+<p align="center">
+  <a href="https://discord.gg/HB4peNX57g">
+	<img src="https://img.shields.io/discord/1143555541004726272?color=%235865F2&label=Discord" alt="Discord Link">
+  </a>
+  <a href="https://github.com/Aviortheking/codestats-readme/stargazers">
+  	<img src="https://img.shields.io/github/stars/Aviortheking/codestats-readme?style=flat-square" alt="Github stars">
+  </a>
+</p>
+
 # Features
 
 - [Features](#features)
