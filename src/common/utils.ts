@@ -20,7 +20,7 @@ export function encodeHTML(str: string) {
 
 export function kFormatter(num: number) {
 	return Math.abs(num) > 999 ?
-		trunc(num / 1000) + 'k' :
+		trunc(num / 1000, 1) + 'k' :
 		num
 }
 
